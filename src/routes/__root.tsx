@@ -1,6 +1,7 @@
 import { HeadContent, Outlet, Scripts, createRootRoute, Link } from '@tanstack/react-router'
 import { OnboardingProvider } from '@/context/OnboardingContext'
 import { AppSidebar } from '@/components/AppSidebar'
+import { BrandingStyles } from '@/components/BrandingStyles'
 
 import '../styles.css'
 
@@ -34,6 +35,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 function RootComponent() {
   return (
     <OnboardingProvider>
+      <BrandingStyles />
       <AppSidebar>
         <div className="p-6 md:p-8 max-w-4xl mx-auto">
           <Outlet />
