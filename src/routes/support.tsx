@@ -96,7 +96,7 @@ function SupportPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="rounded-xl border border-border bg-card p-6 space-y-5">
+        <div className="rounded-lg border border-border bg-card p-6 space-y-5">
           <h2 className="text-lg font-semibold">Contact Information</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
@@ -106,7 +106,7 @@ function SupportPage() {
                 value={form.name}
                 onChange={e => update('name', e.target.value)}
                 placeholder="Your full name"
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
               />
             </div>
             <div className="space-y-1.5">
@@ -116,13 +116,13 @@ function SupportPage() {
                 value={form.email}
                 onChange={e => update('email', e.target.value)}
                 placeholder="you@company.com"
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
               />
             </div>
           </div>
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-6 space-y-5">
+        <div className="rounded-lg border border-border bg-card p-6 space-y-5">
           <h2 className="text-lg font-semibold">Ticket Details</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
@@ -130,7 +130,7 @@ function SupportPage() {
               <select
                 value={form.category}
                 onChange={e => update('category', e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
               >
                 <option value="">Select a category...</option>
                 {categories.map(cat => (
@@ -143,7 +143,7 @@ function SupportPage() {
               <select
                 value={form.priority}
                 onChange={e => update('priority', e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
               >
                 <option value="low">Low</option>
                 <option value="normal">Normal</option>
@@ -159,7 +159,7 @@ function SupportPage() {
               value={form.subject}
               onChange={e => update('subject', e.target.value)}
               placeholder="Brief summary of your issue"
-              className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+              className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
             />
           </div>
           <div className="space-y-1.5">
@@ -169,7 +169,7 @@ function SupportPage() {
               onChange={e => update('description', e.target.value)}
               placeholder="Describe your issue in detail. Include error messages, steps to reproduce, and any relevant context."
               rows={6}
-              className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-y"
+              className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary resize-y"
             />
           </div>
         </div>

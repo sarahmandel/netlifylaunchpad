@@ -13,7 +13,7 @@ function CertificatePage() {
   if (!unlocked) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in">
-        <div className="rounded-2xl border border-border bg-card p-12 text-center max-w-md space-y-4">
+        <div className="rounded-lg border border-border bg-card p-12 text-center max-w-md space-y-4">
           <Lock className="h-16 w-16 text-muted-foreground mx-auto" />
           <h1 className="text-2xl font-bold">Certificate Locked</h1>
           <p className="text-muted-foreground">
@@ -45,7 +45,7 @@ function CertificatePage() {
 
       <div
         id="certificate"
-        className="rounded-2xl border-2 border-primary bg-card p-12 text-center max-w-lg space-y-6 glow-teal relative overflow-hidden print:border-black print:shadow-none print:max-w-full print:rounded-none"
+        className="rounded-lg border-2 border-primary bg-card p-12 text-center max-w-lg space-y-6 glow-teal relative overflow-hidden print:border-black print:shadow-none print:max-w-full print:rounded-none"
       >
         <div className="absolute inset-0 gradient-teal opacity-5 print:hidden" />
         <div className="relative z-10 space-y-6">
