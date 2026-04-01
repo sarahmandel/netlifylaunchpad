@@ -23,7 +23,7 @@ const nonDeveloperStages = [
 
 function TrackSelector({ track, onSelect }: { track: Track; onSelect: (t: Track) => void }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+    <div className="rounded-lg border border-border bg-card p-6 space-y-4">
       <div>
         <h2 className="text-lg font-semibold">Choose Your Track</h2>
         <p className="text-sm text-muted-foreground mt-1">Select the onboarding path that best fits your role.</p>
@@ -31,7 +31,7 @@ function TrackSelector({ track, onSelect }: { track: Track; onSelect: (t: Track)
       <div className="grid gap-3 sm:grid-cols-2">
         <button
           onClick={() => onSelect('developer')}
-          className={`group relative rounded-xl border p-5 text-left transition-all hover:shadow-md ${
+          className={`group relative rounded-lg border p-5 text-left transition-all hover:shadow-md ${
             track === 'developer' ? 'border-primary bg-accent/60 ring-2 ring-primary/30' : 'border-border bg-card hover:border-primary/30'
           }`}
         >
@@ -53,7 +53,7 @@ function TrackSelector({ track, onSelect }: { track: Track; onSelect: (t: Track)
         </button>
         <button
           onClick={() => onSelect('non-developer')}
-          className={`group relative rounded-xl border p-5 text-left transition-all hover:shadow-md ${
+          className={`group relative rounded-lg border p-5 text-left transition-all hover:shadow-md ${
             track === 'non-developer' ? 'border-primary bg-accent/60 ring-2 ring-primary/30' : 'border-border bg-card hover:border-primary/30'
           }`}
         >
@@ -83,7 +83,7 @@ function CalendarCheckins() {
   const outlookUrl = 'https://outlook.office.com/calendar/0/deeplink/compose?subject=Netlify+Onboarding+Check-in&body=Scheduled+onboarding+check-in+to+review+progress+and+discuss+any+questions.'
 
   return (
-    <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+    <div className="rounded-lg border border-border bg-card p-6 space-y-4">
       <div className="flex items-center gap-2">
         <Calendar className="h-5 w-5 text-primary" />
         <h2 className="text-lg font-semibold">Schedule Check-ins</h2>
@@ -116,7 +116,7 @@ function CalendarCheckins() {
 
 function CommunityLinks() {
   return (
-    <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+    <div className="rounded-lg border border-border bg-card p-6 space-y-4">
       <div className="flex items-center gap-2">
         <MessageCircle className="h-5 w-5 text-primary" />
         <h2 className="text-lg font-semibold">Community & Support</h2>
@@ -196,7 +196,7 @@ function Dashboard() {
 
       {track && (
         <>
-          <div className="rounded-xl border border-border bg-card p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="rounded-lg border border-border bg-card p-6 flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="flex-1 space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground font-medium">Overall Progress</span>
@@ -234,7 +234,7 @@ function Dashboard() {
                 <button
                   key={card.num}
                   onClick={() => navigate({ to: card.url })}
-                  className={`group relative rounded-xl border p-6 text-left transition-all hover:shadow-md ${
+                  className={`group relative rounded-lg border p-6 text-left transition-all hover:shadow-md ${
                     status === 'verified' ? 'border-primary/40 bg-accent/60'
                     : status === 'in-progress' ? 'border-primary/20 bg-card hover:border-primary/40'
                     : 'border-border bg-card hover:border-primary/30'

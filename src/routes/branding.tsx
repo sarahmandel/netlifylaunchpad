@@ -24,8 +24,8 @@ function BrandingPage() {
     setBranding(defaults)
   }
 
-  const previewColor = form.primaryColor || '#00ad9c'
-  const previewAccent = form.accentColor || '#17cfbc'
+  const previewColor = form.primaryColor || '#00b8a9'
+  const previewAccent = form.accentColor || '#14d4c6'
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -39,7 +39,7 @@ function BrandingPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="space-y-6">
-          <div className="rounded-xl border border-border bg-card p-6 space-y-5">
+          <div className="rounded-lg border border-border bg-card p-6 space-y-5">
             <h2 className="text-lg font-semibold">Company Information</h2>
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Company Name</label>
@@ -48,7 +48,7 @@ function BrandingPage() {
                 value={form.companyName}
                 onChange={e => setForm(prev => ({ ...prev, companyName: e.target.value }))}
                 placeholder="Netlify"
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
               />
               <p className="text-xs text-muted-foreground">Displayed throughout the onboarding experience.</p>
             </div>
@@ -59,13 +59,13 @@ function BrandingPage() {
                 value={form.logoUrl}
                 onChange={e => setForm(prev => ({ ...prev, logoUrl: e.target.value }))}
                 placeholder="https://example.com/logo.svg"
-                className="w-full px-3 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
               />
               <p className="text-xs text-muted-foreground">Your company logo. Recommended: SVG or PNG with transparent background.</p>
             </div>
           </div>
 
-          <div className="rounded-xl border border-border bg-card p-6 space-y-5">
+          <div className="rounded-lg border border-border bg-card p-6 space-y-5">
             <h2 className="text-lg font-semibold">Brand Colors</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
@@ -73,7 +73,7 @@ function BrandingPage() {
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
-                    value={form.primaryColor || '#00ad9c'}
+                    value={form.primaryColor || '#00b8a9'}
                     onChange={e => setForm(prev => ({ ...prev, primaryColor: e.target.value }))}
                     className="h-9 w-9 rounded-md border border-border cursor-pointer"
                   />
@@ -81,8 +81,8 @@ function BrandingPage() {
                     type="text"
                     value={form.primaryColor}
                     onChange={e => setForm(prev => ({ ...prev, primaryColor: e.target.value }))}
-                    placeholder="#00ad9c"
-                    className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    placeholder="#00b8a9"
+                    className="flex-1 px-3 py-2 rounded-md border border-border bg-background text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   />
                 </div>
               </div>
@@ -91,7 +91,7 @@ function BrandingPage() {
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
-                    value={form.accentColor || '#17cfbc'}
+                    value={form.accentColor || '#14d4c6'}
                     onChange={e => setForm(prev => ({ ...prev, accentColor: e.target.value }))}
                     className="h-9 w-9 rounded-md border border-border cursor-pointer"
                   />
@@ -99,8 +99,8 @@ function BrandingPage() {
                     type="text"
                     value={form.accentColor}
                     onChange={e => setForm(prev => ({ ...prev, accentColor: e.target.value }))}
-                    placeholder="#17cfbc"
-                    className="flex-1 px-3 py-2 rounded-lg border border-border bg-background text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+                    placeholder="#14d4c6"
+                    className="flex-1 px-3 py-2 rounded-md border border-border bg-background text-sm font-mono focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   />
                 </div>
               </div>
@@ -127,7 +127,7 @@ function BrandingPage() {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-xl border border-border bg-card p-6 space-y-5">
+          <div className="rounded-lg border border-border bg-card p-6 space-y-5">
             <div className="flex items-center gap-2">
               <Eye className="h-5 w-5 text-primary" />
               <h2 className="text-lg font-semibold">Preview</h2>
@@ -170,7 +170,7 @@ function BrandingPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-border bg-card p-6 space-y-3">
+          <div className="rounded-lg border border-border bg-card p-6 space-y-3">
             <h3 className="text-sm font-semibold">How Branding Works</h3>
             <ul className="space-y-2 text-xs text-muted-foreground">
               <li className="flex gap-2">

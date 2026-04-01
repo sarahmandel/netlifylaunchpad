@@ -264,7 +264,7 @@ function ChecklistCategoryCard({ category }: { category: ChecklistCategory }) {
   const Icon = category.icon
 
   return (
-    <div className="rounded-xl border border-border bg-card p-6 space-y-5">
+    <div className="rounded-lg border border-border bg-card p-6 space-y-5">
       <div className="flex items-center gap-3">
         <div className="flex items-center justify-center h-10 w-10 rounded-lg gradient-teal text-primary-foreground shrink-0">
           <Icon className="h-5 w-5" />
