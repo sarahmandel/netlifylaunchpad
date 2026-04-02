@@ -83,14 +83,13 @@ export function AppSidebar({ children }: { children: ReactNode }) {
         <aside className={`${collapsed ? 'w-14' : 'w-64'} shrink-0 border-r border-sidebar-border bg-sidebar-background transition-all duration-200 hidden md:flex flex-col`}>
           <div className="flex-1 overflow-y-auto py-5">
             {!collapsed && (
-              <div className="px-5 py-3 mb-5 flex items-center gap-3">
+              <div className="px-4 py-3 mb-4 flex flex-col items-center gap-2">
                 {branding.logoUrl ? (
                   <img src={branding.logoUrl} alt={companyName} className="h-7 w-7 object-contain" />
-                ) : null}
-                <div>
-                  <h2 className="text-base font-bold text-gradient-teal tracking-tight">{companyName}</h2>
-                  <p className="text-xs text-muted-foreground">Engineering Onboarding</p>
-                </div>
+                ) : (
+                  <img src="/netlify-logo.svg" alt="Netlify" className="h-7 object-contain" />
+                )}
+                <p className="text-xs text-muted-foreground">Engineering Onboarding</p>
               </div>
             )}
 
@@ -130,7 +129,7 @@ export function AppSidebar({ children }: { children: ReactNode }) {
         <div className="flex-1 flex flex-col min-w-0">
           <header className="h-14 border-b border-border flex items-center px-4 gap-3 bg-card md:hidden">
             <MobileMenu />
-            <h2 className="text-sm font-bold text-gradient-teal tracking-tight">{companyName} Onboarding</h2>
+            <img src="/netlify-logo.svg" alt="Netlify" className="h-5 object-contain" />
           </header>
           <main className="flex-1 overflow-y-auto">
             {children}
@@ -156,14 +155,13 @@ function MobileMenu() {
         <div className="fixed inset-0 z-50 flex">
           <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />
           <div className="relative w-64 bg-sidebar-background border-r border-sidebar-border p-4 space-y-4 overflow-y-auto">
-            <div className="mb-5 flex items-center gap-3">
+            <div className="mb-4 flex flex-col items-center gap-2">
               {branding.logoUrl ? (
                 <img src={branding.logoUrl} alt={companyName} className="h-7 w-7 object-contain" />
-              ) : null}
-              <div>
-                <h2 className="text-base font-bold text-gradient-teal tracking-tight">{companyName}</h2>
-                <p className="text-xs text-muted-foreground">Engineering Onboarding</p>
-              </div>
+              ) : (
+                <img src="/netlify-logo.svg" alt="Netlify" className="h-7 object-contain" />
+              )}
+              <p className="text-xs text-muted-foreground">Engineering Onboarding</p>
             </div>
             <div className="space-y-0.5" onClick={() => setOpen(false)}>
               <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Overview</p>
