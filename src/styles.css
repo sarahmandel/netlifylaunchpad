@@ -1,5 +1,5 @@
 @import "tailwindcss" source("../");
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 @theme {
   --color-background: hsl(var(--background));
@@ -36,73 +36,76 @@
 
 :root {
   --background: 220 20% 97%;
-  --foreground: 220 25% 10%;
+  --foreground: 222 47% 11%;
   --card: 0 0% 100%;
-  --card-foreground: 220 25% 10%;
+  --card-foreground: 222 47% 11%;
   --popover: 0 0% 100%;
-  --popover-foreground: 220 25% 10%;
-  --primary: 174 100% 34%;
+  --popover-foreground: 222 47% 11%;
+  --primary: 172 100% 36%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 220 15% 92%;
-  --secondary-foreground: 220 25% 10%;
-  --muted: 220 15% 92%;
-  --muted-foreground: 220 10% 46%;
-  --accent: 174 60% 90%;
-  --accent-foreground: 174 100% 20%;
+  --secondary: 220 14% 93%;
+  --secondary-foreground: 222 47% 11%;
+  --muted: 220 14% 93%;
+  --muted-foreground: 220 9% 46%;
+  --accent: 172 50% 92%;
+  --accent-foreground: 172 100% 22%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
-  --border: 220 15% 88%;
-  --input: 220 15% 88%;
-  --ring: 174 100% 34%;
-  --radius: 0.75rem;
-  --sidebar-background: 220 20% 97%;
-  --sidebar-foreground: 220 10% 30%;
-  --sidebar-primary: 174 100% 34%;
+  --border: 220 13% 87%;
+  --input: 220 13% 87%;
+  --ring: 172 100% 36%;
+  --radius: 0.5rem;
+  --sidebar-background: 222 30% 98%;
+  --sidebar-foreground: 222 20% 30%;
+  --sidebar-primary: 172 100% 36%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 174 60% 92%;
-  --sidebar-accent-foreground: 174 100% 20%;
-  --sidebar-border: 220 15% 90%;
-  --sidebar-ring: 174 100% 34%;
-  --teal-glow: 174 100% 34%;
+  --sidebar-accent: 172 50% 93%;
+  --sidebar-accent-foreground: 172 100% 22%;
+  --sidebar-border: 220 13% 90%;
+  --sidebar-ring: 172 100% 36%;
+  --teal-glow: 172 100% 36%;
 }
 
 .dark {
-  --background: 222 30% 8%;
-  --foreground: 210 20% 92%;
-  --card: 222 25% 12%;
-  --card-foreground: 210 20% 92%;
-  --popover: 222 25% 12%;
-  --popover-foreground: 210 20% 92%;
-  --primary: 174 100% 34%;
+  --background: 225 33% 7%;
+  --foreground: 213 20% 88%;
+  --card: 225 28% 11%;
+  --card-foreground: 213 20% 88%;
+  --popover: 225 28% 11%;
+  --popover-foreground: 213 20% 88%;
+  --primary: 172 100% 36%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 222 20% 18%;
-  --secondary-foreground: 210 20% 85%;
-  --muted: 222 20% 16%;
-  --muted-foreground: 215 15% 55%;
-  --accent: 174 40% 15%;
-  --accent-foreground: 174 80% 70%;
+  --secondary: 225 22% 15%;
+  --secondary-foreground: 213 20% 82%;
+  --muted: 225 22% 14%;
+  --muted-foreground: 215 14% 52%;
+  --accent: 172 35% 14%;
+  --accent-foreground: 172 70% 65%;
   --destructive: 0 62% 30%;
   --destructive-foreground: 0 0% 100%;
-  --border: 222 20% 18%;
-  --input: 222 20% 18%;
-  --ring: 174 100% 34%;
-  --sidebar-background: 222 30% 10%;
-  --sidebar-foreground: 210 15% 65%;
-  --sidebar-primary: 174 100% 34%;
+  --border: 225 18% 16%;
+  --input: 225 18% 16%;
+  --ring: 172 100% 36%;
+  --sidebar-background: 225 35% 6%;
+  --sidebar-foreground: 215 14% 60%;
+  --sidebar-primary: 172 100% 36%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 174 30% 14%;
-  --sidebar-accent-foreground: 174 80% 70%;
-  --sidebar-border: 222 20% 16%;
-  --sidebar-ring: 174 100% 34%;
-  --teal-glow: 174 100% 34%;
+  --sidebar-accent: 172 28% 12%;
+  --sidebar-accent-foreground: 172 70% 65%;
+  --sidebar-border: 225 22% 13%;
+  --sidebar-ring: 172 100% 36%;
+  --teal-glow: 172 100% 36%;
 }
 
 body {
   @apply m-0 bg-background text-foreground;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+  font-family: 'Mulish', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
 }
 
 code {
@@ -110,18 +113,18 @@ code {
 }
 
 .gradient-teal {
-  background: linear-gradient(135deg, #00ad9c, #17cfbc);
+  background: linear-gradient(135deg, #00b8a9, #14d4c6);
 }
 
 .text-gradient-teal {
-  background: linear-gradient(135deg, #00ad9c, #30e8d6);
+  background: linear-gradient(135deg, #00b8a9, #2ee8da);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .glow-teal {
-  box-shadow: 0 0 20px hsl(var(--teal-glow) / .15), 0 0 60px hsl(var(--teal-glow) / .05);
+  box-shadow: 0 0 15px hsl(var(--teal-glow) / .12), 0 0 45px hsl(var(--teal-glow) / .04);
 }
 
 .animate-fade-in {
@@ -145,9 +148,9 @@ code {
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 15px rgba(0, 173, 156, 0.2);
+    box-shadow: 0 0 15px rgba(0, 184, 169, 0.2);
   }
   50% {
-    box-shadow: 0 0 30px rgba(0, 173, 156, 0.4);
+    box-shadow: 0 0 30px rgba(0, 184, 169, 0.4);
   }
 }

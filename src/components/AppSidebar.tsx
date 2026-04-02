@@ -29,10 +29,10 @@ function NavLink({ to, icon: Icon, label, verified }: { to: string; icon: React.
   return (
     <Link
       to={to}
-      className={`flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors ${
+      className={`flex items-center gap-2.5 rounded-md px-3 py-1.5 text-[13px] transition-colors ${
         isActive
-          ? 'bg-sidebar-accent text-sidebar-accent-foreground font-medium'
-          : 'text-sidebar-foreground hover:bg-sidebar-accent/50'
+          ? 'bg-sidebar-accent text-sidebar-accent-foreground font-semibold'
+          : 'text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground'
       }`}
     >
       <Icon className="h-4 w-4 shrink-0" />
@@ -81,7 +81,7 @@ export function AppSidebar({ children }: { children: ReactNode }) {
     <SidebarContext.Provider value={{ collapsed, toggle: () => setCollapsed(c => !c) }}>
       <div className="flex min-h-screen">
         <aside className={`${collapsed ? 'w-14' : 'w-64'} shrink-0 border-r border-sidebar-border bg-sidebar-background transition-all duration-200 hidden md:flex flex-col`}>
-          <div className="flex-1 overflow-y-auto py-4">
+          <div className="flex-1 overflow-y-auto py-5">
             {!collapsed && (
               <div className="px-4 py-3 mb-4 flex flex-col items-center gap-2">
                 {branding.logoUrl ? (
@@ -93,32 +93,32 @@ export function AppSidebar({ children }: { children: ReactNode }) {
               </div>
             )}
 
-            <div className="px-3 space-y-1">
-              <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Overview</p>
+            <div className="px-3 space-y-0.5">
+              <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Overview</p>
               <NavLink to="/" icon={LayoutDashboard} label="Dashboard" />
             </div>
 
-            <div className="px-3 space-y-1 mt-6">
-              <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Stages</p>
+            <div className="px-3 space-y-0.5 mt-6">
+              <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Stages</p>
               {stageNav.map(s => (
                 <NavLink key={s.stage} to={s.url} icon={s.icon} label={s.title} verified={stages[s.stage]?.managerVerified} />
               ))}
             </div>
 
-            <div className="px-3 space-y-1 mt-6">
-              <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Resources</p>
+            <div className="px-3 space-y-0.5 mt-6">
+              <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Resources</p>
               <NavLink to="/checklist" icon={ClipboardCheck} label="Checklists" />
               <NavLink to="/prompts" icon={MessageSquare} label="Prompt Library" />
             </div>
 
-            <div className="px-3 space-y-1 mt-6">
-              <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Settings</p>
+            <div className="px-3 space-y-0.5 mt-6">
+              <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Settings</p>
               <NavLink to="/branding" icon={Paintbrush} label="Branding" />
               <NavLink to="/support" icon={LifeBuoy} label="Support" />
             </div>
 
-            <div className="px-3 space-y-1 mt-6">
-              <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Recognition</p>
+            <div className="px-3 space-y-0.5 mt-6">
+              <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Recognition</p>
               <NavLink to="/certificate" icon={Award} label="Certificate" />
             </div>
 
@@ -127,7 +127,7 @@ export function AppSidebar({ children }: { children: ReactNode }) {
         </aside>
 
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-14 border-b border-border flex items-center px-4 gap-3 bg-background md:hidden">
+          <header className="h-14 border-b border-border flex items-center px-4 gap-3 bg-card md:hidden">
             <MobileMenu />
             <img src="/netlify-logo.svg" alt="Netlify" className="h-5 object-contain" />
           </header>
@@ -163,28 +163,28 @@ function MobileMenu() {
               )}
               <p className="text-xs text-muted-foreground">Engineering Onboarding</p>
             </div>
-            <div className="space-y-1" onClick={() => setOpen(false)}>
-              <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Overview</p>
+            <div className="space-y-0.5" onClick={() => setOpen(false)}>
+              <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Overview</p>
               <NavLink to="/" icon={LayoutDashboard} label="Dashboard" />
             </div>
-            <div className="space-y-1" onClick={() => setOpen(false)}>
-              <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Stages</p>
+            <div className="space-y-0.5" onClick={() => setOpen(false)}>
+              <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Stages</p>
               {stageNav.map(s => (
                 <NavLink key={s.stage} to={s.url} icon={s.icon} label={s.title} verified={stages[s.stage]?.managerVerified} />
               ))}
             </div>
-            <div className="space-y-1" onClick={() => setOpen(false)}>
-              <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Resources</p>
+            <div className="space-y-0.5" onClick={() => setOpen(false)}>
+              <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Resources</p>
               <NavLink to="/checklist" icon={ClipboardCheck} label="Checklists" />
               <NavLink to="/prompts" icon={MessageSquare} label="Prompt Library" />
             </div>
-            <div className="space-y-1" onClick={() => setOpen(false)}>
-              <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Settings</p>
+            <div className="space-y-0.5" onClick={() => setOpen(false)}>
+              <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Settings</p>
               <NavLink to="/branding" icon={Paintbrush} label="Branding" />
               <NavLink to="/support" icon={LifeBuoy} label="Support" />
             </div>
-            <div className="space-y-1" onClick={() => setOpen(false)}>
-              <p className="px-3 text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2">Recognition</p>
+            <div className="space-y-0.5" onClick={() => setOpen(false)}>
+              <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Recognition</p>
               <NavLink to="/certificate" icon={Award} label="Certificate" />
             </div>
             <div className="flex items-center gap-2 justify-center pt-4 border-t border-sidebar-border">

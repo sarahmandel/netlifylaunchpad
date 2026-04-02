@@ -92,6 +92,61 @@ function Stage1() {
       </div>
 
       <div className="rounded-lg border border-border bg-card p-6 space-y-4">
+        <h2 className="text-lg font-semibold">🌐 DNS Configuration</h2>
+        <p className="text-sm text-muted-foreground">
+          Use this quick guide when connecting domains to Netlify, whether the domain is brand new or currently managed by another DNS provider.
+        </p>
+
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold">New DNS on Netlify</h3>
+          <ul className="space-y-1.5 text-sm text-muted-foreground">
+            <li className="flex gap-2">
+              <span className="text-primary">1.</span>
+              <span>Add your custom domain in Netlify under Domain Management.</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-primary">2.</span>
+              <span>Create or delegate a DNS zone to Netlify DNS.</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-primary">3.</span>
+              <span>Set your registrar nameservers to the Netlify-provided nameservers.</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-primary">4.</span>
+              <span>Verify apex and <code>www</code> records, then set your primary domain in Netlify.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold">DNS Repoint from Common Providers</h3>
+          <ul className="space-y-1.5 text-sm text-muted-foreground">
+            <li className="flex gap-2">
+              <span className="text-primary">→</span>
+              <span><strong>Cloudflare:</strong> Export records first, reduce TTL before migration, switch nameservers at registrar, then recreate/validate records in Netlify DNS.</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-primary">→</span>
+              <span><strong>GoDaddy / Namecheap / Route 53:</strong> Copy existing records, lower TTL for faster cutover, update nameservers to Netlify, and confirm mail/auth records (MX, SPF, DKIM, DMARC) after propagation.</span>
+            </li>
+            <li className="flex gap-2">
+              <span className="text-primary">→</span>
+              <span><strong>Cutover checklist:</strong> Keep old zone available until propagation completes, test both apex and <code>www</code>, and verify HTTPS issuance in Netlify after DNS settles.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-sm font-semibold">Netlify DNS vs Cloudflare DNS</h3>
+          <p className="text-sm text-muted-foreground">
+            Cloudflare DNS is strong for advanced traffic controls and edge security overlays. Netlify DNS is strongest when the site, deploys, certificates, and domain management live in one control plane.
+            Using only Netlify reduces operational split-brain, shortens incident triage, keeps domain and SSL workflows aligned with deploys, and lowers onboarding complexity for teams that want a single owner for delivery and DNS.
+          </p>
+        </div>
+      </div>
+
+      <div className="rounded-lg border border-border bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold">📝 Written Exercise</h2>
         <p className="text-sm text-muted-foreground">
           Write a 1-page summary (300–500 words) comparing modern web architecture with traditional server-rendered architectures. Cover: deployment flow, performance characteristics, scalability, and developer experience. Share this document with your manager before requesting verification.

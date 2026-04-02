@@ -241,7 +241,7 @@ function PromptLibrary() {
           const Icon = categoryIcons[prompt.category] || FileText
           const isExpanded = expandedPrompt === i
           return (
-            <div key={i} className="rounded-xl border border-border bg-card overflow-hidden transition-all">
+            <div key={i} className="rounded-lg border border-border bg-card overflow-hidden transition-all">
               <button
                 onClick={() => setExpandedPrompt(isExpanded ? null : i)}
                 className="w-full p-5 text-left flex items-start gap-4 hover:bg-secondary/30 transition-colors"
