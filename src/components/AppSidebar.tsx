@@ -1,8 +1,9 @@
 import { useState, createContext, useContext, type ReactNode } from 'react'
 import { Link, useRouter, useNavigate } from '@tanstack/react-router'
-import { LayoutDashboard, BookOpen, Rocket, Terminal, Award, CircleCheck, PanelLeft, ClipboardCheck, MessageSquare, LifeBuoy, Paintbrush, Hash, LogOut } from 'lucide-react'
+import { LayoutDashboard, BookOpen, Rocket, Terminal, Award, CircleCheck, PanelLeft, ClipboardCheck, MessageSquare, LifeBuoy, Paintbrush, Hash, LogOut, Sun, Moon } from 'lucide-react'
 import { useOnboarding } from '@/context/OnboardingContext'
 import { useIdentity } from '@/lib/identity-context'
+import { useTheme } from '@/lib/theme-context'
 
 type SidebarContextType = {
   collapsed: boolean
@@ -70,6 +71,26 @@ function CommunityQuickLinks() {
         </a>
       </div>
     </div>
+  )
+}
+
+function ThemeToggle({ collapsed = false }: { collapsed?: boolean }) {
+  const { theme, toggleTheme } = useTheme()
+  const isDark = theme === 'dark'
+  const Icon = isDark ? Sun : Moon
+  const label = isDark ? 'Light mode' : 'Dark mode'
+
+  return (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      aria-label={`Switch to ${label.toLowerCase()}`}
+      title={label}
+      className="flex items-center gap-2.5 rounded-md px-3 py-1.5 text-[13px] w-full text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground transition-colors"
+    >
+      <Icon className="h-4 w-4 shrink-0" />
+      {!collapsed && <span>{label}</span>}
+    </button>
   )
 }
 
@@ -141,6 +162,7 @@ export function AppSidebar({ children }: { children: ReactNode }) {
               <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Settings</p>
               <NavLink to="/branding" icon={Paintbrush} label="Branding" />
               <NavLink to="/support" icon={LifeBuoy} label="Support" />
+              <ThemeToggle collapsed={collapsed} />
             </div>
 
             <div className="px-3 space-y-0.5 mt-6">
@@ -209,6 +231,7 @@ function MobileMenu() {
               <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Settings</p>
               <NavLink to="/branding" icon={Paintbrush} label="Branding" />
               <NavLink to="/support" icon={LifeBuoy} label="Support" />
+              <ThemeToggle />
             </div>
             <div className="space-y-0.5" onClick={() => setOpen(false)}>
               <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Recognition</p>
