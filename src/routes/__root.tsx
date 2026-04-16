@@ -4,6 +4,7 @@ import { AppSidebar } from '@/components/AppSidebar'
 import { BrandingStyles } from '@/components/BrandingStyles'
 import { IdentityProvider, useIdentity } from '@/lib/identity-context'
 import { CallbackHandler } from '@/components/CallbackHandler'
+import { ThemeProvider, themeInitScript } from '@/lib/theme-context'
 
 import '../styles.css'
 
@@ -22,9 +23,10 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <HeadContent />
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
         {children}
@@ -36,11 +38,13 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 
 function RootComponent() {
   return (
-    <IdentityProvider>
-      <CallbackHandler>
-        <AuthGate />
-      </CallbackHandler>
-    </IdentityProvider>
+    <ThemeProvider>
+      <IdentityProvider>
+        <CallbackHandler>
+          <AuthGate />
+        </CallbackHandler>
+      </IdentityProvider>
+    </ThemeProvider>
   )
 }
 
