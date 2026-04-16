@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Clock } from 'lucide-react'
+import { Clock, MonitorPlay, BookOpen, Globe, FileText } from 'lucide-react'
 import { useOnboarding } from '@/context/OnboardingContext'
 import { VideoEmbed } from '@/components/VideoEmbed'
 import { KnowledgeCheck } from '@/components/KnowledgeCheck'
@@ -64,12 +64,12 @@ function Stage1() {
       </div>
 
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold">📺 Watch: Platform Overview</h2>
+        <h2 className="text-lg font-semibold flex items-center gap-2"><MonitorPlay className="h-5 w-5 text-primary shrink-0" /> Watch: Platform Overview</h2>
         <VideoEmbed videoId="XG8nJDWu3a0" title="Everything you need to know about the Netlify platform" />
       </div>
 
       <div className="rounded-lg border border-border bg-card p-6 space-y-4">
-        <h2 className="text-lg font-semibold">📖 Required Reading</h2>
+        <h2 className="text-lg font-semibold flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary shrink-0" /> Required Reading</h2>
         <p className="text-sm text-muted-foreground">Complete these readings before taking the quiz. Take notes for your manager review.</p>
         <ul className="space-y-2 text-sm text-muted-foreground">
           <li className="flex gap-2">
@@ -92,7 +92,7 @@ function Stage1() {
       </div>
 
       <div className="rounded-lg border border-border bg-card p-6 space-y-4">
-        <h2 className="text-lg font-semibold">🌐 DNS Configuration</h2>
+        <h2 className="text-lg font-semibold flex items-center gap-2"><Globe className="h-5 w-5 text-primary shrink-0" /> DNS Configuration</h2>
         <p className="text-sm text-muted-foreground">
           Use this quick guide when connecting domains to Netlify, whether the domain is brand new or currently managed by another DNS provider.
         </p>
@@ -147,7 +147,7 @@ function Stage1() {
       </div>
 
       <div className="rounded-lg border border-border bg-card p-6 space-y-4">
-        <h2 className="text-lg font-semibold">📝 Written Exercise</h2>
+        <h2 className="text-lg font-semibold flex items-center gap-2"><FileText className="h-5 w-5 text-primary shrink-0" /> Written Exercise</h2>
         <p className="text-sm text-muted-foreground">
           Write a 1-page summary (300–500 words) comparing modern web architecture with traditional server-rendered architectures. Cover: deployment flow, performance characteristics, scalability, and developer experience. Share this document with your manager before requesting verification.
         </p>

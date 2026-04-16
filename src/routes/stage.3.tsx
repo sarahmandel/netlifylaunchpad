@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Clock } from 'lucide-react'
+import { Clock, MonitorPlay, BookOpen, FileText } from 'lucide-react'
 import { useOnboarding } from '@/context/OnboardingContext'
 import { VideoEmbed } from '@/components/VideoEmbed'
 import { ActivityChecklist } from '@/components/ActivityChecklist'
@@ -32,12 +32,12 @@ function Stage3() {
       </div>
 
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold">📺 Watch: Netlify CLI Quickstart</h2>
+        <h2 className="text-lg font-semibold flex items-center gap-2"><MonitorPlay className="h-5 w-5 text-primary shrink-0" /> Watch: Netlify CLI Quickstart</h2>
         <VideoEmbed videoId="t3kCm0kruDc" title="Netlify Quickstart: CLI" />
       </div>
 
       <div className="rounded-lg border border-border bg-card p-6 space-y-4">
-        <h2 className="text-lg font-semibold">📖 Required Reading</h2>
+        <h2 className="text-lg font-semibold flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary shrink-0" /> Required Reading</h2>
         <p className="text-sm text-muted-foreground">Deep-dive into the CLI documentation before starting the hands-on activities.</p>
         <ul className="space-y-2 text-sm text-muted-foreground">
           <li className="flex gap-2">
@@ -56,7 +56,7 @@ function Stage3() {
       </div>
 
       <div className="rounded-lg border border-border bg-card p-6 space-y-4">
-        <h2 className="text-lg font-semibold">📝 CLI Exploration Exercise</h2>
+        <h2 className="text-lg font-semibold flex items-center gap-2"><FileText className="h-5 w-5 text-primary shrink-0" /> CLI Exploration Exercise</h2>
         <p className="text-sm text-muted-foreground">After installing the CLI, run the following commands and document their output in a text file. Share this file with your manager as part of your verification.</p>
         <div className="space-y-1.5 text-sm font-mono">
           <p className="text-primary bg-primary/10 px-3 py-1.5 rounded">$ netlify status</p>

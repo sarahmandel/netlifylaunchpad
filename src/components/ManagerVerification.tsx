@@ -28,7 +28,7 @@ export function ManagerVerification({ stage }: { stage: number }) {
           <p className="font-semibold text-sm">Manager Verification</p>
           <p className="text-xs text-muted-foreground">
             {verified
-              ? 'Stage verified by manager ✓'
+              ? 'Stage verified by manager'
               : unlocked
                 ? 'Click to verify completion of this stage'
                 : 'Complete the quiz and activity to unlock'

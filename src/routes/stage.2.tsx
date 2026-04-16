@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Clock } from 'lucide-react'
+import { Clock, MonitorPlay, BookOpen, FileText } from 'lucide-react'
 import { useOnboarding } from '@/context/OnboardingContext'
 import { VideoEmbed } from '@/components/VideoEmbed'
 import { KnowledgeCheck } from '@/components/KnowledgeCheck'
@@ -64,12 +64,12 @@ function Stage2() {
       </div>
 
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold">📺 Watch: Deploying from Git</h2>
+        <h2 className="text-lg font-semibold flex items-center gap-2"><MonitorPlay className="h-5 w-5 text-primary shrink-0" /> Watch: Deploying from Git</h2>
         <VideoEmbed videoId="4h8B080Mv4U" title="Netlify Tutorial – Deploying from Git" />
       </div>
 
       <div className="rounded-lg border border-border bg-card p-6 space-y-4">
-        <h2 className="text-lg font-semibold">📖 Required Reading</h2>
+        <h2 className="text-lg font-semibold flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary shrink-0" /> Required Reading</h2>
         <p className="text-sm text-muted-foreground">Study these docs to understand build configuration, deploy previews, and environment management.</p>
         <ul className="space-y-2 text-sm text-muted-foreground">
           <li className="flex gap-2">
@@ -92,7 +92,7 @@ function Stage2() {
       </div>
 
       <div className="rounded-lg border border-border bg-card p-6 space-y-4">
-        <h2 className="text-lg font-semibold">📝 Configuration Exercise</h2>
+        <h2 className="text-lg font-semibold flex items-center gap-2"><FileText className="h-5 w-5 text-primary shrink-0" /> Configuration Exercise</h2>
         <p className="text-sm text-muted-foreground">
           Create a <code className="font-mono text-primary bg-primary/10 px-1.5 py-0.5 rounded text-xs">netlify.toml</code> file in your project root that defines: build command, publish directory, a redirect rule (e.g., <code className="font-mono text-primary bg-primary/10 px-1.5 py-0.5 rounded text-xs">/old-page → /new-page</code>), and at least one environment variable context (production vs. staging). Document each line with comments explaining its purpose.
         </p>

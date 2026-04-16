@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Clock } from 'lucide-react'
+import { Clock, MonitorPlay, BookOpen, FileText, Hammer } from 'lucide-react'
 import { useOnboarding } from '@/context/OnboardingContext'
 import { VideoEmbed } from '@/components/VideoEmbed'
 import { ActivityChecklist } from '@/components/ActivityChecklist'
@@ -32,12 +32,12 @@ function Stage4() {
       </div>
 
       <div className="space-y-2">
-        <h2 className="text-lg font-semibold">📺 Watch: AI + Netlify Forms</h2>
+        <h2 className="text-lg font-semibold flex items-center gap-2"><MonitorPlay className="h-5 w-5 text-primary shrink-0" /> Watch: AI + Netlify Forms</h2>
         <VideoEmbed videoId="B4PfKu-e3Uk" title="Add forms to your project with AI + Netlify" />
       </div>
 
       <div className="rounded-lg border border-border bg-card p-6 space-y-4">
-        <h2 className="text-lg font-semibold">📖 Required Reading</h2>
+        <h2 className="text-lg font-semibold flex items-center gap-2"><BookOpen className="h-5 w-5 text-primary shrink-0" /> Required Reading</h2>
         <p className="text-sm text-muted-foreground">Study these advanced platform features before starting the capstone project.</p>
         <ul className="space-y-2 text-sm text-muted-foreground">
           <li className="flex gap-2">
@@ -60,7 +60,7 @@ function Stage4() {
       </div>
 
       <div className="rounded-lg border border-primary/20 bg-accent/50 p-5 space-y-3">
-        <h3 className="font-semibold text-accent-foreground">🏗️ The Full Build — Cumulative Capstone Project</h3>
+        <h3 className="font-semibold text-accent-foreground flex items-center gap-2"><Hammer className="h-5 w-5 text-primary shrink-0" /> The Full Build — Cumulative Capstone Project</h3>
         <p className="text-sm text-muted-foreground">
           Take the site you deployed in Stage 2. Use the CLI skills from Stage 3 to create a new branch called{' '}
           <code className="font-mono text-primary bg-primary/10 px-1.5 py-0.5 rounded text-xs">feature-form</code>. Add a{' '}
@@ -73,7 +73,7 @@ function Stage4() {
       </div>
 
       <div className="rounded-lg border border-border bg-card p-6 space-y-4">
-        <h2 className="text-lg font-semibold">📝 Architecture Write-Up</h2>
+        <h2 className="text-lg font-semibold flex items-center gap-2"><FileText className="h-5 w-5 text-primary shrink-0" /> Architecture Write-Up</h2>
         <p className="text-sm text-muted-foreground">
           Write a technical summary (500–800 words) of your completed project. Include: architecture decisions, the deployment pipeline you set up, how environment variables are managed, how the form submissions flow works, and what you would change if building for production at scale. Share this with your manager.
         </p>

@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Award, Download, Printer, Lock } from 'lucide-react'
+import { Award, Download, Printer, Lock, Check } from 'lucide-react'
 import { useOnboarding } from '@/context/OnboardingContext'
 
 export const Route = createFileRoute('/certificate')({
@@ -70,13 +70,13 @@ function CertificatePage() {
           </div>
 
           <div className="flex items-center justify-center gap-2 text-sm text-primary font-medium print:text-black">
-            <span>✓ Foundation</span>
+            <span className="inline-flex items-center gap-1"><Check className="h-4 w-4" /> Foundation</span>
             <span>•</span>
-            <span>✓ Deployment</span>
+            <span className="inline-flex items-center gap-1"><Check className="h-4 w-4" /> Deployment</span>
             <span>•</span>
-            <span>✓ CLI</span>
+            <span className="inline-flex items-center gap-1"><Check className="h-4 w-4" /> CLI</span>
             <span>•</span>
-            <span>✓ Advanced</span>
+            <span className="inline-flex items-center gap-1"><Check className="h-4 w-4" /> Advanced</span>
           </div>
 
           <p className="text-xs text-muted-foreground print:text-gray-500">
