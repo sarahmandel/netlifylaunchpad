@@ -1,7 +1,8 @@
 import { useState, createContext, useContext, type ReactNode } from 'react'
-import { Link, useRouter } from '@tanstack/react-router'
-import { LayoutDashboard, BookOpen, Rocket, Terminal, Award, CircleCheck, PanelLeft, ClipboardCheck, MessageSquare, LifeBuoy, Paintbrush, Hash } from 'lucide-react'
+import { Link, useRouter, useNavigate } from '@tanstack/react-router'
+import { LayoutDashboard, BookOpen, Rocket, Terminal, Award, CircleCheck, PanelLeft, ClipboardCheck, MessageSquare, LifeBuoy, Paintbrush, Hash, LogOut } from 'lucide-react'
 import { useOnboarding } from '@/context/OnboardingContext'
+import { useIdentity } from '@/lib/identity-context'
 
 type SidebarContextType = {
   collapsed: boolean
@@ -72,6 +73,31 @@ function CommunityQuickLinks() {
   )
 }
 
+function LogoutButton({ collapsed = false }: { collapsed?: boolean }) {
+  const { logout, user } = useIdentity()
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    await logout()
+    navigate({ to: '/login' })
+  }
+
+  return (
+    <div className="px-3 mt-4 pt-4 border-t border-sidebar-border">
+      {!collapsed && user && (
+        <p className="px-3 text-[11px] text-muted-foreground truncate mb-2">{user.email}</p>
+      )}
+      <button
+        onClick={handleLogout}
+        className="flex items-center gap-2.5 rounded-md px-3 py-1.5 text-[13px] w-full text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground transition-colors"
+      >
+        <LogOut className="h-4 w-4 shrink-0" />
+        {!collapsed && <span>Sign out</span>}
+      </button>
+    </div>
+  )
+}
+
 export function AppSidebar({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(false)
   const { stages, branding } = useOnboarding()
@@ -122,6 +148,7 @@ export function AppSidebar({ children }: { children: ReactNode }) {
               <NavLink to="/certificate" icon={Award} label="Certificate" />
             </div>
 
+            <LogoutButton collapsed={collapsed} />
             {!collapsed && <CommunityQuickLinks />}
           </div>
         </aside>
@@ -187,6 +214,7 @@ function MobileMenu() {
               <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Recognition</p>
               <NavLink to="/certificate" icon={Award} label="Certificate" />
             </div>
+            <LogoutButton />
             <div className="flex items-center gap-2 justify-center pt-4 border-t border-sidebar-border">
               <a href="https://netlify.slack.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-md hover:bg-sidebar-accent/50 transition-colors" title="Slack">
                 <Hash className="h-4 w-4" />

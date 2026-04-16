@@ -1,7 +1,9 @@
-import { HeadContent, Outlet, Scripts, createRootRoute, Link } from '@tanstack/react-router'
+import { HeadContent, Outlet, Scripts, createRootRoute, Link, useRouter } from '@tanstack/react-router'
 import { OnboardingProvider } from '@/context/OnboardingContext'
 import { AppSidebar } from '@/components/AppSidebar'
 import { BrandingStyles } from '@/components/BrandingStyles'
+import { IdentityProvider, useIdentity } from '@/lib/identity-context'
+import { CallbackHandler } from '@/components/CallbackHandler'
 
 import '../styles.css'
 
@@ -33,6 +35,43 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
+  return (
+    <IdentityProvider>
+      <CallbackHandler>
+        <AuthGate />
+      </CallbackHandler>
+    </IdentityProvider>
+  )
+}
+
+function AuthGate() {
+  const { user, ready } = useIdentity()
+  const router = useRouter()
+  const isLoginRoute = router.state.location.pathname === '/login'
+
+  if (!ready) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      </div>
+    )
+  }
+
+  if (!user && !isLoginRoute) {
+    if (typeof window !== 'undefined') {
+      router.navigate({ to: '/login' })
+    }
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="animate-pulse text-muted-foreground">Redirecting to login...</div>
+      </div>
+    )
+  }
+
+  if (isLoginRoute) {
+    return <Outlet />
+  }
+
   return (
     <OnboardingProvider>
       <BrandingStyles />
