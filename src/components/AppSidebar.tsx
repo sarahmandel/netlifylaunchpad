@@ -1,7 +1,8 @@
 import { useState, createContext, useContext, type ReactNode } from 'react'
 import { Link, useRouter } from '@tanstack/react-router'
-import { LayoutDashboard, BookOpen, Rocket, Terminal, Award, CircleCheck, PanelLeft, ClipboardCheck, MessageSquare, LifeBuoy, Paintbrush, Hash } from 'lucide-react'
+import { LayoutDashboard, BookOpen, Rocket, Terminal, Award, CircleCheck, PanelLeft, ClipboardCheck, MessageSquare, LifeBuoy, Paintbrush, Hash, BarChart3 } from 'lucide-react'
 import { useOnboarding } from '@/context/OnboardingContext'
+import { UserMenu } from '@/components/UserMenu'
 
 type SidebarContextType = {
   collapsed: boolean
@@ -95,7 +96,8 @@ export function AppSidebar({ children }: { children: ReactNode }) {
 
             <div className="px-3 space-y-0.5">
               <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Overview</p>
-              <NavLink to="/" icon={LayoutDashboard} label="Dashboard" />
+              <NavLink to="/" icon={LayoutDashboard} label="Home" />
+              <NavLink to="/dashboard" icon={BarChart3} label="Dashboard" />
             </div>
 
             <div className="px-3 space-y-0.5 mt-6">
@@ -123,6 +125,9 @@ export function AppSidebar({ children }: { children: ReactNode }) {
             </div>
 
             {!collapsed && <CommunityQuickLinks />}
+          </div>
+          <div className="px-3 py-3 border-t border-sidebar-border mt-auto">
+            <UserMenu collapsed={collapsed} />
           </div>
         </aside>
 
@@ -165,7 +170,8 @@ function MobileMenu() {
             </div>
             <div className="space-y-0.5" onClick={() => setOpen(false)}>
               <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Overview</p>
-              <NavLink to="/" icon={LayoutDashboard} label="Dashboard" />
+              <NavLink to="/" icon={LayoutDashboard} label="Home" />
+              <NavLink to="/dashboard" icon={BarChart3} label="Dashboard" />
             </div>
             <div className="space-y-0.5" onClick={() => setOpen(false)}>
               <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Stages</p>
@@ -186,6 +192,9 @@ function MobileMenu() {
             <div className="space-y-0.5" onClick={() => setOpen(false)}>
               <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Recognition</p>
               <NavLink to="/certificate" icon={Award} label="Certificate" />
+            </div>
+            <div className="pt-4 border-t border-sidebar-border" onClick={() => setOpen(false)}>
+              <UserMenu />
             </div>
             <div className="flex items-center gap-2 justify-center pt-4 border-t border-sidebar-border">
               <a href="https://netlify.slack.com" target="_blank" rel="noopener noreferrer" className="p-2 rounded-md hover:bg-sidebar-accent/50 transition-colors" title="Slack">
