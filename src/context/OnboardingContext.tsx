@@ -1,21 +1,16 @@
-import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from 'react'
+import {
+  loadProgress,
+  saveProgress,
+  defaultBranding,
+  getDefaultStages,
+  type BrandingConfig,
+  type OnboardingState,
+  type Track,
+  type UserProgress,
+} from '@/lib/progress-store'
 
-export type Track = 'developer' | 'non-developer' | null
-
-type StageState = {
-  quizPassed: boolean
-  activityCompleted: boolean
-  managerVerified: boolean
-}
-
-type BrandingConfig = {
-  companyName: string
-  logoUrl: string
-  primaryColor: string
-  accentColor: string
-}
-
-type OnboardingState = Record<number, StageState>
+export type { Track } from '@/lib/progress-store'
 
 type OnboardingContextType = {
   stages: OnboardingState
@@ -30,55 +25,20 @@ type OnboardingContextType = {
   allVerified: () => boolean
 }
 
-const STORAGE_KEY = 'netlify-onboarding-progress'
-const TRACK_KEY = 'netlify-onboarding-track'
-const BRANDING_KEY = 'netlify-onboarding-branding'
+const CACHE_KEY = 'netlify-onboarding-progress-cache'
 
-const defaultBranding: BrandingConfig = {
-  companyName: 'Netlify',
-  logoUrl: '',
-  primaryColor: '',
-  accentColor: '',
-}
-
-function getDefaultState(): OnboardingState {
-  return {
-    1: { quizPassed: false, activityCompleted: false, managerVerified: false },
-    2: { quizPassed: false, activityCompleted: false, managerVerified: false },
-    3: { quizPassed: false, activityCompleted: false, managerVerified: false },
-    4: { quizPassed: false, activityCompleted: false, managerVerified: false },
-  }
-}
-
-function loadState(): OnboardingState {
+function loadCache(): UserProgress | null {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY)
-    if (saved) {
-      const parsed = JSON.parse(saved)
-      const defaults = getDefaultState()
-      for (const key of Object.keys(defaults)) {
-        parsed[key] = { ...defaults[Number(key)], ...parsed[key] }
-      }
-      return parsed
-    }
-  } catch {}
-  return getDefaultState()
-}
-
-function loadTrack(): Track {
-  try {
-    const saved = localStorage.getItem(TRACK_KEY)
-    if (saved === 'developer' || saved === 'non-developer') return saved
+    const saved = localStorage.getItem(CACHE_KEY)
+    if (saved) return JSON.parse(saved) as UserProgress
   } catch {}
   return null
 }
 
-function loadBranding(): BrandingConfig {
+function writeCache(progress: UserProgress) {
   try {
-    const saved = localStorage.getItem(BRANDING_KEY)
-    if (saved) return { ...defaultBranding, ...JSON.parse(saved) }
+    localStorage.setItem(CACHE_KEY, JSON.stringify(progress))
   } catch {}
-  return defaultBranding
 }
 
 const OnboardingContext = createContext<OnboardingContextType | null>(null)
@@ -90,46 +50,75 @@ export function useOnboarding() {
 }
 
 export function OnboardingProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<OnboardingState>(loadState)
-  const [track, setTrackState] = useState<Track>(loadTrack)
-  const [branding, setBrandingState] = useState<BrandingConfig>(loadBranding)
+  const cached = typeof window !== 'undefined' ? loadCache() : null
+  const [state, setState] = useState<OnboardingState>(cached?.stages ?? getDefaultStages())
+  const [track, setTrackState] = useState<Track>(cached?.track ?? null)
+  const [branding, setBrandingState] = useState<BrandingConfig>(cached?.branding ?? defaultBranding)
+  const [hydrated, setHydrated] = useState(false)
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    loadProgress()
+      .then((data) => {
+        if (cancelled || !data) return
+        setState(data.stages)
+        setTrackState(data.track)
+        setBrandingState(data.branding)
+        writeCache(data)
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (!cancelled) setHydrated(true)
+      })
+    return () => { cancelled = true }
+  }, [])
+
+  const persist = useCallback((next: UserProgress) => {
+    writeCache(next)
+    if (!hydrated) return
+    if (saveTimer.current) clearTimeout(saveTimer.current)
+    saveTimer.current = setTimeout(() => {
+      saveProgress({ data: next }).catch(() => {})
+    }, 400)
+  }, [hydrated])
 
   const setTrack = useCallback((t: Track) => {
     setTrackState(t)
-    try { localStorage.setItem(TRACK_KEY, t ?? '') } catch {}
-  }, [])
+    persist({ stages: state, track: t, branding })
+  }, [state, branding, persist])
 
   const setBranding = useCallback((partial: Partial<BrandingConfig>) => {
     setBrandingState(prev => {
       const next = { ...prev, ...partial }
-      try { localStorage.setItem(BRANDING_KEY, JSON.stringify(next)) } catch {}
+      persist({ stages: state, track, branding: next })
       return next
     })
-  }, [])
+  }, [state, track, persist])
 
   const passQuiz = useCallback((stage: number) => {
     setState(prev => {
       const next = { ...prev, [stage]: { ...prev[stage], quizPassed: true } }
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)) } catch {}
+      persist({ stages: next, track, branding })
       return next
     })
-  }, [])
+  }, [track, branding, persist])
 
   const completeActivity = useCallback((stage: number) => {
     setState(prev => {
       const next = { ...prev, [stage]: { ...prev[stage], activityCompleted: true } }
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)) } catch {}
+      persist({ stages: next, track, branding })
       return next
     })
-  }, [])
+  }, [track, branding, persist])
 
   const toggleManagerVerification = useCallback((stage: number) => {
     setState(prev => {
       const next = { ...prev, [stage]: { ...prev[stage], managerVerified: !prev[stage].managerVerified } }
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)) } catch {}
+      persist({ stages: next, track, branding })
       return next
     })
-  }, [])
+  }, [track, branding, persist])
 
   const getProgress = useCallback(() => {
     const verified = Object.values(state).filter(s => s.managerVerified).length
