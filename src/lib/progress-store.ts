@@ -81,7 +81,7 @@ export const loadProgress = createServerFn({ method: 'GET' }).handler(
 )
 
 export const saveProgress = createServerFn({ method: 'POST' })
-  .validator((data: UserProgress) => data)
+  .inputValidator((data: UserProgress) => data)
   .handler(async ({ data }): Promise<{ ok: true } | { ok: false; error: string }> => {
     const user = await getUser()
     if (!user) return { ok: false, error: 'unauthenticated' }
