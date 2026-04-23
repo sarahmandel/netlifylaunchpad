@@ -1,5 +1,5 @@
 @import "tailwindcss" source("../");
-@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Figtree:ital,wght@0,300..900;1,300..900&family=Martian+Mono:wght@300..700&display=swap');
 
 @theme {
   --color-background: hsl(var(--background));
@@ -28,105 +28,240 @@
   --color-sidebar-accent: hsl(var(--sidebar-accent));
   --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
   --color-sidebar-border: hsl(var(--sidebar-border));
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-xs: var(--ntl-radius-xs);
+  --radius-sm: var(--ntl-radius-s);
+  --radius-md: var(--ntl-radius-m);
+  --radius-lg: var(--ntl-radius-l);
+  --radius-xl: var(--ntl-radius-xl);
+  --radius-2xl: var(--ntl-radius-2xl);
+  --font-sans: "Instrument Sans", system-ui, "Helvetica", sans-serif;
+  --font-display: "Figtree", system-ui, "Helvetica", sans-serif;
+  --font-mono: "Martian Mono", ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
 }
 
 :root {
-  --background: 220 20% 97%;
-  --foreground: 222 47% 11%;
-  --card: 0 0% 100%;
-  --card-foreground: 222 47% 11%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222 47% 11%;
-  --primary: 172 100% 36%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 220 14% 93%;
-  --secondary-foreground: 222 47% 11%;
-  --muted: 220 14% 93%;
-  --muted-foreground: 220 9% 46%;
-  --accent: 172 50% 92%;
-  --accent-foreground: 172 100% 22%;
+  /* Netlify Spark UI — Neutral (light) */
+  --ntl-neutral-000: 0 0% 100%;
+  --ntl-neutral-100: 225 8% 97%;
+  --ntl-neutral-200: 210 7% 92%;
+  --ntl-neutral-300: 216 10% 84%;
+  --ntl-neutral-400: 215 11% 66%;
+  --ntl-neutral-500: 213 7% 50%;
+  --ntl-neutral-600: 213 7% 35%;
+  --ntl-neutral-700: 213 8% 23%;
+  --ntl-neutral-800: 210 8% 10%;
+  --ntl-neutral-900: 216 46% 4%;
+
+  /* Netlify Spark UI — Teal (brand secondary / accent) */
+  --ntl-teal-000: 178 100% 94%;
+  --ntl-teal-100: 178 93% 77%;
+  --ntl-teal-200: 179 76% 55%;
+  --ntl-teal-300: 179 83% 46%;
+  --ntl-teal-400: 179 95% 38%;
+  --ntl-teal-500: 179 95% 33%;
+  --ntl-teal-600: 179 97% 25%;
+  --ntl-teal-700: 180 98% 21%;
+  --ntl-teal-800: 179 97% 14%;
+  --ntl-teal-900: 180 56% 11%;
+
+  /* Netlify Spark UI — Blue (brand primary) */
+  --ntl-blue-400: 218 94% 74%;
+  --ntl-blue-500: 222 89% 66%;
+  --ntl-blue-600: 222 91% 57%;
+  --ntl-blue-700: 229 84% 55%;
+  --ntl-blue-800: 228 67% 38%;
+
+  /* Netlify Spark UI — Radius scale */
+  --ntl-radius-xs: 0.125rem;
+  --ntl-radius-s: 0.25rem;
+  --ntl-radius-m: 0.375rem;
+  --ntl-radius-l: 0.75rem;
+  --ntl-radius-xl: 1rem;
+  --ntl-radius-2xl: 1.875rem;
+  --ntl-radius-pill: 360px;
+
+  /* Netlify Spark UI — Spacing scale (exposed as utility vars) */
+  --ntl-space-3xs: 0.25rem;
+  --ntl-space-2xs: 0.5rem;
+  --ntl-space-xs: 0.75rem;
+  --ntl-space-s: 1rem;
+  --ntl-space-m: 1.5rem;
+  --ntl-space-l: 2rem;
+  --ntl-space-xl: 3rem;
+  --ntl-space-2xl: 4rem;
+  --ntl-space-3xl: 6rem;
+
+  /* Semantic tokens (consumed by Tailwind theme above) */
+  --background: var(--ntl-neutral-100);
+  --foreground: var(--ntl-neutral-800);
+  --card: var(--ntl-neutral-000);
+  --card-foreground: var(--ntl-neutral-800);
+  --popover: var(--ntl-neutral-000);
+  --popover-foreground: var(--ntl-neutral-800);
+  --primary: var(--ntl-teal-400);
+  --primary-foreground: var(--ntl-neutral-000);
+  --secondary: var(--ntl-neutral-200);
+  --secondary-foreground: var(--ntl-neutral-700);
+  --muted: var(--ntl-neutral-200);
+  --muted-foreground: var(--ntl-neutral-500);
+  --accent: var(--ntl-teal-000);
+  --accent-foreground: var(--ntl-teal-800);
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
-  --border: 220 13% 87%;
-  --input: 220 13% 87%;
-  --ring: 172 100% 36%;
-  --radius: 0.5rem;
-  --sidebar-background: 222 30% 98%;
-  --sidebar-foreground: 222 20% 30%;
-  --sidebar-primary: 172 100% 36%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 172 50% 93%;
-  --sidebar-accent-foreground: 172 100% 22%;
-  --sidebar-border: 220 13% 90%;
-  --sidebar-ring: 172 100% 36%;
-  --teal-glow: 172 100% 36%;
+  --border: var(--ntl-neutral-300);
+  --input: var(--ntl-neutral-300);
+  --ring: var(--ntl-teal-400);
+  --radius: var(--ntl-radius-l);
+
+  --sidebar-background: var(--ntl-neutral-000);
+  --sidebar-foreground: var(--ntl-neutral-600);
+  --sidebar-primary: var(--ntl-teal-400);
+  --sidebar-primary-foreground: var(--ntl-neutral-000);
+  --sidebar-accent: var(--ntl-teal-000);
+  --sidebar-accent-foreground: var(--ntl-teal-800);
+  --sidebar-border: var(--ntl-neutral-200);
+  --sidebar-ring: var(--ntl-teal-400);
+
+  --teal-glow: var(--ntl-teal-300);
+  --link: var(--ntl-blue-700);
+  --link-hover: var(--ntl-blue-800);
 }
 
 .dark {
-  --background: 225 33% 7%;
-  --foreground: 213 20% 88%;
-  --card: 225 28% 11%;
-  --card-foreground: 213 20% 88%;
-  --popover: 225 28% 11%;
-  --popover-foreground: 213 20% 88%;
-  --primary: 172 100% 36%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 225 22% 15%;
-  --secondary-foreground: 213 20% 82%;
-  --muted: 225 22% 14%;
-  --muted-foreground: 215 14% 52%;
-  --accent: 172 35% 14%;
-  --accent-foreground: 172 70% 65%;
-  --destructive: 0 62% 30%;
+  /* Netlify Spark UI — Neutral (dark) */
+  --ntl-neutral-000: 216 26% 7%;
+  --ntl-neutral-100: 210 29% 93%;
+  --ntl-neutral-200: 213 14% 71%;
+  --ntl-neutral-300: 213 9% 53%;
+  --ntl-neutral-400: 213 10% 34%;
+  --ntl-neutral-500: 213 13% 26%;
+  --ntl-neutral-600: 214 18% 19%;
+  --ntl-neutral-700: 214 19% 15%;
+  --ntl-neutral-800: 216 26% 10%;
+
+  --background: 216 30% 5%;
+  --foreground: var(--ntl-neutral-100);
+  --card: var(--ntl-neutral-700);
+  --card-foreground: var(--ntl-neutral-100);
+  --popover: var(--ntl-neutral-700);
+  --popover-foreground: var(--ntl-neutral-100);
+  --primary: var(--ntl-teal-300);
+  --primary-foreground: 216 30% 5%;
+  --secondary: var(--ntl-neutral-600);
+  --secondary-foreground: var(--ntl-neutral-100);
+  --muted: var(--ntl-neutral-600);
+  --muted-foreground: var(--ntl-neutral-200);
+  --accent: var(--ntl-teal-900);
+  --accent-foreground: var(--ntl-teal-100);
+  --destructive: 0 62% 45%;
   --destructive-foreground: 0 0% 100%;
-  --border: 225 18% 16%;
-  --input: 225 18% 16%;
-  --ring: 172 100% 36%;
-  --sidebar-background: 225 35% 6%;
-  --sidebar-foreground: 215 14% 60%;
-  --sidebar-primary: 172 100% 36%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 172 28% 12%;
-  --sidebar-accent-foreground: 172 70% 65%;
-  --sidebar-border: 225 22% 13%;
-  --sidebar-ring: 172 100% 36%;
-  --teal-glow: 172 100% 36%;
+  --border: var(--ntl-neutral-500);
+  --input: var(--ntl-neutral-500);
+  --ring: var(--ntl-teal-300);
+
+  --sidebar-background: 216 32% 4%;
+  --sidebar-foreground: var(--ntl-neutral-200);
+  --sidebar-primary: var(--ntl-teal-300);
+  --sidebar-primary-foreground: 216 30% 5%;
+  --sidebar-accent: var(--ntl-teal-900);
+  --sidebar-accent-foreground: var(--ntl-teal-100);
+  --sidebar-border: var(--ntl-neutral-600);
+  --sidebar-ring: var(--ntl-teal-300);
+
+  --teal-glow: var(--ntl-teal-300);
+  --link: var(--ntl-blue-400);
+  --link-hover: var(--ntl-blue-500);
 }
 
 body {
   @apply m-0 bg-background text-foreground;
-  font-family: 'Mulish', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-family: "Instrument Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 16px;
   line-height: 1.6;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.005em;
 }
 
-code {
-  font-family: 'JetBrains Mono', source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Figtree", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  text-wrap: balance;
 }
 
+code, pre, kbd, samp {
+  font-family: "Martian Mono", ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-feature-settings: "ss01", "ss02";
+}
+
+/* Netlify Spark UI — brand accents */
 .gradient-teal {
-  background: linear-gradient(135deg, #00b8a9, #14d4c6);
+  background: linear-gradient(135deg,
+    hsl(var(--ntl-teal-400)),
+    hsl(var(--ntl-teal-200)));
 }
 
 .text-gradient-teal {
-  background: linear-gradient(135deg, #00b8a9, #2ee8da);
+  background: linear-gradient(135deg,
+    hsl(var(--ntl-teal-500)),
+    hsl(var(--ntl-teal-300)));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .glow-teal {
-  box-shadow: 0 0 15px hsl(var(--teal-glow) / .12), 0 0 45px hsl(var(--teal-glow) / .04);
+  box-shadow:
+    0 0 0 1px hsl(var(--ntl-teal-300) / 0.15),
+    0 8px 24px hsl(var(--ntl-teal-400) / 0.18),
+    0 0 45px hsl(var(--ntl-teal-300) / 0.08);
 }
 
+.dark .glow-teal {
+  box-shadow:
+    0 0 0 1px hsl(var(--ntl-teal-300) / 0.25),
+    0 8px 24px hsl(var(--ntl-teal-400) / 0.25),
+    0 0 60px hsl(var(--ntl-teal-300) / 0.12);
+}
+
+/* Netlify Spark UI — layout utility primitives */
+.ntl-stack {
+  display: grid;
+}
+.ntl-stack > * {
+  grid-area: 1 / 1;
+}
+
+.ntl-flow > * + * {
+  margin-top: var(--ntl-flow-space, var(--ntl-space-m));
+}
+
+.ntl-cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ntl-cluster-gap, var(--ntl-space-s));
+  align-items: var(--ntl-cluster-align, center);
+  justify-content: var(--ntl-cluster-justify, flex-start);
+}
+
+.ntl-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--ntl-grid-column-min-size, 16rem), 1fr));
+  gap: var(--ntl-grid-gap, var(--ntl-space-m));
+}
+
+.ntl-flex-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ntl-flex-grid-gap, var(--ntl-space-m));
+}
+.ntl-flex-grid > * {
+  flex: 1 1 var(--ntl-flex-grid-basis, 16rem);
+}
+
+/* Animations */
 .animate-fade-in {
   animation: fade-in 0.4s ease-out;
 }
@@ -148,9 +283,34 @@ code {
 
 @keyframes pulse-glow {
   0%, 100% {
-    box-shadow: 0 0 15px rgba(0, 184, 169, 0.2);
+    box-shadow: 0 0 15px hsl(var(--ntl-teal-300) / 0.25);
   }
   50% {
-    box-shadow: 0 0 30px rgba(0, 184, 169, 0.4);
+    box-shadow: 0 0 30px hsl(var(--ntl-teal-300) / 0.45);
   }
+}
+
+/* Link styling — Spark UI uses blue-700 for links over teal primary */
+a.ntl-link,
+.prose a {
+  color: hsl(var(--link));
+  text-decoration: underline;
+  text-decoration-color: hsl(var(--link) / 0.35);
+  text-underline-offset: 2px;
+  transition: color 150ms ease, text-decoration-color 150ms ease;
+}
+a.ntl-link:hover,
+.prose a:hover {
+  color: hsl(var(--link-hover));
+  text-decoration-color: hsl(var(--link-hover));
+}
+
+/* Selection */
+::selection {
+  background: hsl(var(--ntl-teal-200) / 0.45);
+  color: hsl(var(--ntl-teal-900));
+}
+.dark ::selection {
+  background: hsl(var(--ntl-teal-400) / 0.35);
+  color: hsl(var(--ntl-teal-000));
 }
