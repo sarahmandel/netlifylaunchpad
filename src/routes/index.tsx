@@ -1,4 +1,4 @@
-import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Clock, BookOpen, Rocket, Terminal, Award, ArrowRight, CircleCheck, LoaderCircle, Code, Users, Calendar, MessageCircle, Hash } from 'lucide-react'
 import { useOnboarding } from '@/context/OnboardingContext'
 import type { Track } from '@/context/OnboardingContext'

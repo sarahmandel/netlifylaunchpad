@@ -1,5 +1,5 @@
 import { createServerFn } from '@tanstack/react-start'
-import { getStore } from '@netlify/blobs'
+import { getDatabase } from '@netlify/database'
 import { getUser } from '@netlify/identity'
 
 export type StageState = {
@@ -66,17 +66,41 @@ function mergeProgress(stored: Partial<UserProgress> | null): UserProgress {
   }
 }
 
-function progressStore() {
-  return getStore({ name: 'user-progress', consistency: 'strong' })
+type ProgressRow = {
+  progress: UserProgress | Partial<UserProgress> | string | null
+}
+
+let databaseConnection: ReturnType<typeof getDatabase> | null = null
+
+function database() {
+  databaseConnection ??= getDatabase()
+  return databaseConnection
+}
+
+function parseStoredProgress(value: ProgressRow['progress']): Partial<UserProgress> | null {
+  if (!value) return null
+  if (typeof value === 'string') {
+    try {
+      return JSON.parse(value) as Partial<UserProgress>
+    } catch {
+      return null
+    }
+  }
+  return value
 }
 
 export const loadProgress = createServerFn({ method: 'GET' }).handler(
   async (): Promise<UserProgress | null> => {
     const user = await getUser()
     if (!user) return null
-    const store = progressStore()
-    const data = await store.get(user.id, { type: 'json' })
-    return mergeProgress(data as Partial<UserProgress> | null)
+    const db = database()
+    const rows = await db.sql<ProgressRow>`
+      SELECT progress
+      FROM user_progress
+      WHERE user_id = ${user.id}
+      LIMIT 1
+    `
+    return mergeProgress(parseStoredProgress(rows[0]?.progress ?? null))
   },
 )
 
@@ -85,7 +109,14 @@ export const saveProgress = createServerFn({ method: 'POST' })
   .handler(async ({ data }): Promise<{ ok: true } | { ok: false; error: string }> => {
     const user = await getUser()
     if (!user) return { ok: false, error: 'unauthenticated' }
-    const store = progressStore()
-    await store.setJSON(user.id, data)
+    const db = database()
+    await db.sql`
+      INSERT INTO user_progress (user_id, progress)
+      VALUES (${user.id}, ${JSON.stringify(data)}::jsonb)
+      ON CONFLICT (user_id)
+      DO UPDATE SET
+        progress = EXCLUDED.progress,
+        updated_at = now()
+    `
     return { ok: true }
   })
