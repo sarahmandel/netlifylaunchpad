@@ -1,6 +1,6 @@
 import { useState, createContext, useContext, type ReactNode } from 'react'
 import { Link, useRouter, useNavigate } from '@tanstack/react-router'
-import { LayoutDashboard, BookOpen, Rocket, Terminal, Award, CircleCheck, PanelLeft, ClipboardCheck, MessageSquare, LifeBuoy, Paintbrush, Hash, LogOut, Sun, Moon } from 'lucide-react'
+import { LayoutDashboard, BookOpen, Rocket, Terminal, Award, CircleCheck, PanelLeft, ClipboardCheck, MessageSquare, LifeBuoy, Hash, LogOut, Sun, Moon } from 'lucide-react'
 import { useOnboarding } from '@/context/OnboardingContext'
 import { useIdentity } from '@/lib/identity-context'
 import { useTheme } from '@/lib/theme-context'
@@ -160,7 +160,6 @@ export function AppSidebar({ children }: { children: ReactNode }) {
 
             <div className="px-3 space-y-0.5 mt-6">
               <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Settings</p>
-              <NavLink to="/branding" icon={Paintbrush} label="Branding" />
               <NavLink to="/support" icon={LifeBuoy} label="Support" />
               <ThemeToggle collapsed={collapsed} />
             </div>
@@ -229,7 +228,6 @@ function MobileMenu() {
             </div>
             <div className="space-y-0.5" onClick={() => setOpen(false)}>
               <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Settings</p>
-              <NavLink to="/branding" icon={Paintbrush} label="Branding" />
               <NavLink to="/support" icon={LifeBuoy} label="Support" />
               <ThemeToggle />
             </div>
