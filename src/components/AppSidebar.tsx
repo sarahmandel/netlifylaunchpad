@@ -4,6 +4,7 @@ import { LayoutDashboard, BookOpen, Rocket, Terminal, Award, CircleCheck, PanelL
 import { useOnboarding } from '@/context/OnboardingContext'
 import { useIdentity } from '@/lib/identity-context'
 import { useTheme } from '@/lib/theme-context'
+import { DocsAssistant } from '@/components/DocsAssistant'
 
 type SidebarContextType = {
   collapsed: boolean
@@ -185,6 +186,7 @@ export function AppSidebar({ children }: { children: ReactNode }) {
         </div>
       </div>
       <FloatingSupportButton />
+      <DocsAssistant />
     </SidebarContext.Provider>
   )
 }
