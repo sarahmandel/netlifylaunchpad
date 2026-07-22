@@ -1,5 +1,5 @@
 import { useState, createContext, useContext, type ReactNode } from 'react'
-import { Link, useRouter } from '@tanstack/react-router'
+import { Link, useRouterState } from '@tanstack/react-router'
 import {
   LayoutDashboard,
   CircleCheck,
@@ -39,20 +39,25 @@ function NavLink({
   label: string
   verified?: boolean
 }) {
-  const router = useRouter()
-  const isActive = router.state.location.pathname === (params ? to.replace('$moduleId', params.moduleId) : to)
+  const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const isActive = pathname === (params ? to.replace('$moduleId', params.moduleId) : to)
   const { collapsed } = useSidebar()
 
   return (
     <Link
       to={to}
       params={params}
-      className={`flex items-center gap-2.5 rounded-md px-3 py-1.5 text-[13px] transition-colors ${
+      className={`relative flex items-center gap-2.5 rounded-md px-3 py-1.5 text-[13px] transition-colors ${
         isActive
           ? 'bg-sidebar-accent text-sidebar-accent-foreground font-semibold'
           : 'text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground'
       }`}
     >
+      <span
+        className={`absolute left-0 top-1/2 -translate-y-1/2 w-0.5 rounded-full bg-primary transition-all duration-200 ${
+          isActive ? 'h-5 opacity-100' : 'h-0 opacity-0'
+        }`}
+      />
       <Icon className="h-4 w-4 shrink-0" />
       {!collapsed && <span className="truncate">{label}</span>}
       {verified && !collapsed && <CircleCheck className="h-3.5 w-3.5 text-primary ml-auto shrink-0" />}
