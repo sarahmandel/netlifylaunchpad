@@ -1,6 +1,7 @@
 import { HeadContent, Outlet, Scripts, createRootRoute, Link } from '@tanstack/react-router'
 import { OnboardingProvider } from '@/context/OnboardingContext'
 import { AppSidebar } from '@/components/AppSidebar'
+import { SearchProvider } from '@/components/SearchCommand'
 import { ThemeProvider, themeInitScript } from '@/lib/theme-context'
 
 import '../styles.css'
@@ -42,11 +43,13 @@ function RootComponent() {
   return (
     <ThemeProvider>
       <OnboardingProvider>
-        <AppSidebar>
-          <div className="p-6 md:p-8 max-w-4xl mx-auto">
-            <Outlet />
-          </div>
-        </AppSidebar>
+        <SearchProvider>
+          <AppSidebar>
+            <div className="p-6 md:p-8 max-w-4xl mx-auto">
+              <Outlet />
+            </div>
+          </AppSidebar>
+        </SearchProvider>
       </OnboardingProvider>
     </ThemeProvider>
   )

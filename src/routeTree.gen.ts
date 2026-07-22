@@ -59,12 +59,7 @@ export interface FileRouteTypes {
   fullPaths: '/' | '/checklist' | '/prompts' | '/module/$moduleId'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/checklist' | '/prompts' | '/module/$moduleId'
-  id:
-    | '__root__'
-    | '/'
-    | '/checklist'
-    | '/prompts'
-    | '/module/$moduleId'
+  id: '__root__' | '/' | '/checklist' | '/prompts' | '/module/$moduleId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
