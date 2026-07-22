@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Clock, ArrowRight, CircleCheck, LoaderCircle, BookOpen, MessageSquare, LifeBuoy } from 'lucide-react'
+import { Clock, ArrowRight, CircleCheck, LoaderCircle, BookOpen, MessageSquare } from 'lucide-react'
 import { useOnboarding } from '@/context/OnboardingContext'
 import {
   modules,
@@ -167,7 +167,7 @@ function Dashboard() {
       <div className="rounded-lg border border-border bg-card p-6 space-y-4">
         <h2 className="text-lg font-semibold">Keep learning</h2>
         <p className="text-sm text-muted-foreground">Official Netlify resources to go deeper as you build.</p>
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           <a
             href="https://docs.netlify.com"
             target="_blank"
@@ -196,18 +196,6 @@ function Dashboard() {
               <p className="text-xs text-muted-foreground">Ask the community</p>
             </div>
           </a>
-          <button
-            onClick={() => navigate({ to: '/support' })}
-            className="flex items-center gap-3 rounded-lg border border-border p-4 hover:bg-secondary/50 transition-colors text-left"
-          >
-            <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-secondary text-muted-foreground shrink-0">
-              <LifeBuoy className="h-4 w-4" />
-            </div>
-            <div>
-              <p className="text-sm font-medium">Get Support</p>
-              <p className="text-xs text-muted-foreground">Contact Netlify</p>
-            </div>
-          </button>
         </div>
       </div>
     </div>

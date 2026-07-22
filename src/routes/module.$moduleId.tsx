@@ -166,12 +166,7 @@ function ModulePage() {
             {next.title} <ArrowRight className="h-4 w-4" />
           </button>
         ) : (
-          <button
-            onClick={() => navigate({ to: '/certificate' })}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg gradient-teal text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity"
-          >
-            View certificate <ArrowRight className="h-4 w-4" />
-          </button>
+          <span />
         )}
       </div>
     </div>

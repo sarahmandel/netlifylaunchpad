@@ -6,8 +6,6 @@ import {
   PanelLeft,
   ClipboardCheck,
   MessageSquare,
-  LifeBuoy,
-  Award,
   BookOpen,
   Sun,
   Moon,
@@ -152,8 +150,6 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
         <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Resources</p>
         <NavLink to="/checklist" icon={ClipboardCheck} label="Checklists" />
         <NavLink to="/prompts" icon={MessageSquare} label="Prompt Library" />
-        <NavLink to="/support" icon={LifeBuoy} label="Support" />
-        <NavLink to="/certificate" icon={Award} label="Certificate" />
       </div>
 
       <div className="px-3 space-y-0.5 mt-6">
