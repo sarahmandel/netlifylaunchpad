@@ -32,6 +32,8 @@ export type SearchRecord = {
   kindLabel: string
   icon: LucideIcon
   title: string
+  /** Pre-lowercased title, so the matcher doesn't re-lowercase on every keystroke. */
+  titleLower: string
   /** Short supporting line shown under the title. */
   subtitle?: string
   /** Extra context (e.g. "Module · Create") shown on the right. */
@@ -87,6 +89,7 @@ function build(): SearchRecord[] {
       title: p.title,
       subtitle: p.subtitle,
       context: 'Page',
+      titleLower: p.title.toLowerCase(),
       haystack: `${p.title} ${p.subtitle} ${p.keywords}`.toLowerCase(),
       target: { to: p.to },
     })
@@ -110,6 +113,7 @@ function build(): SearchRecord[] {
       title: m.title,
       subtitle: m.tagline,
       context: `Module · ${sectionMeta[m.section].label}`,
+      titleLower: m.title.toLowerCase(),
       haystack: `${m.title} ${body}`.toLowerCase(),
       target: { to: '/module/$moduleId', params: { moduleId: m.id } },
     })
@@ -125,6 +129,7 @@ function build(): SearchRecord[] {
       title: p.title,
       subtitle: p.description,
       context: `${p.category} · ${trackLabels[p.track]}`,
+      titleLower: p.title.toLowerCase(),
       haystack: `${p.title} ${p.description} ${p.prompt} ${p.category} ${trackLabels[p.track]}`.toLowerCase(),
       target: { to: '/prompts', hash: `prompt-${slug(p.title)}` },
     })
@@ -142,6 +147,7 @@ function build(): SearchRecord[] {
           title: item.label,
           subtitle: `${category.title} · ${section.title}`,
           context: item.tier && item.tier !== 'all' ? tierLabel(item.tier) : undefined,
+          titleLower: item.label.toLowerCase(),
           haystack: `${item.label} ${category.title} ${section.title}`.toLowerCase(),
           target: { to: '/checklist', hash: `check-${slug(item.label)}` },
         })
@@ -180,13 +186,21 @@ export function searchAll(query: string, limit = 40): SearchResult[] {
   if (!q) return []
   const terms = q.split(/\s+/).filter(Boolean)
 
+  // Compile each term's word-boundary matcher once per query, not once per
+  // record. This is the difference between a few regex builds per keystroke and
+  // several hundred, which is what made typing feel laggy.
+  const compiled = terms.map((term) => ({
+    term,
+    boundary: new RegExp(`\\b${escapeRegExp(term)}`),
+  }))
+
   const results: SearchResult[] = []
   for (const record of searchRecords) {
-    const title = record.title.toLowerCase()
+    const title = record.titleLower
     let score = 0
     let matchedAll = true
 
-    for (const term of terms) {
+    for (const { term, boundary } of compiled) {
       const inTitle = title.includes(term)
       const inHay = record.haystack.includes(term)
       if (!inTitle && !inHay) {
@@ -196,10 +210,10 @@ export function searchAll(query: string, limit = 40): SearchResult[] {
       if (inTitle) {
         score += 10
         if (title.startsWith(term)) score += 8
-        if (new RegExp(`\\b${escapeRegExp(term)}`).test(title)) score += 4
+        if (boundary.test(title)) score += 4
       } else {
         score += 2
-        if (new RegExp(`\\b${escapeRegExp(term)}`).test(record.haystack)) score += 1
+        if (boundary.test(record.haystack)) score += 1
       }
     }
 
