@@ -20,8 +20,9 @@ const categories = [
   'Build & Deploy Issues',
   'DNS & Domain Configuration',
   'Functions & Edge Functions',
+  'Data & Storage',
   'Performance & CDN',
-  'Identity & Authentication',
+  'Security & Access',
   'Onboarding Help',
   'Other',
 ]
@@ -71,10 +72,10 @@ function SupportPage() {
           </p>
           <div className="flex flex-wrap gap-3 mt-6">
             <a href="https://answers.netlify.com" target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-lg border border-border bg-secondary hover:bg-secondary/80 text-sm font-medium transition-colors">
-              Netlify Forum
+              Support Forums
             </a>
-            <a href="https://discord.gg/netlify" target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-lg border border-border bg-secondary hover:bg-secondary/80 text-sm font-medium transition-colors">
-              Discord Community
+            <a href="https://docs.netlify.com" target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-lg border border-border bg-secondary hover:bg-secondary/80 text-sm font-medium transition-colors">
+              Netlify Docs
             </a>
             <button onClick={() => setSubmitted(false)} className="px-4 py-2 rounded-lg gradient-teal text-primary-foreground text-sm font-medium transition-colors">
               Submit Another Request
