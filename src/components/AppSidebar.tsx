@@ -7,12 +7,14 @@ import {
   ClipboardCheck,
   MessageSquare,
   BookOpen,
+  Search,
   Sun,
   Moon,
   type LucideIcon,
 } from 'lucide-react'
 import { useOnboarding } from '@/context/OnboardingContext'
 import { useTheme } from '@/lib/theme-context'
+import { useSearch } from '@/components/SearchCommand'
 import { modules, sectionOrder, sectionMeta } from '@/lib/curriculum'
 
 type SidebarContextType = {
@@ -94,6 +96,39 @@ function ModuleNav({ onNavigate }: { onNavigate?: () => void }) {
   )
 }
 
+function SearchTrigger() {
+  const { collapsed } = useSidebar()
+  const { openSearch } = useSearch()
+
+  if (collapsed) {
+    return (
+      <button
+        type="button"
+        onClick={openSearch}
+        aria-label="Search"
+        title="Search (⌘K)"
+        className="flex items-center justify-center w-full rounded-md py-2 text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground transition-colors"
+      >
+        <Search className="h-4 w-4 shrink-0" />
+      </button>
+    )
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={openSearch}
+      className="flex items-center gap-2.5 w-full rounded-md border border-sidebar-border bg-sidebar-accent/30 px-3 py-2 text-[13px] text-muted-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground transition-colors"
+    >
+      <Search className="h-4 w-4 shrink-0" />
+      <span>Search…</span>
+      <kbd className="ml-auto flex items-center gap-0.5 rounded bg-secondary px-1.5 py-0.5 text-[10px] font-mono text-muted-foreground">
+        ⌘K
+      </kbd>
+    </button>
+  )
+}
+
 function ThemeToggle({ collapsed = false }: { collapsed?: boolean }) {
   const { theme, toggleTheme } = useTheme()
   const isDark = theme === 'dark'
@@ -144,7 +179,11 @@ function CommunityQuickLinks() {
 function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <>
-      <div className="px-3 space-y-0.5" onClick={onNavigate}>
+      <div className="px-3" onClick={onNavigate}>
+        <SearchTrigger />
+      </div>
+
+      <div className="px-3 space-y-0.5 mt-4" onClick={onNavigate}>
         <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Overview</p>
         <NavLink to="/" icon={LayoutDashboard} label="Dashboard" />
       </div>
@@ -192,11 +231,25 @@ export function AppSidebar({ children }: { children: ReactNode }) {
           <header className="h-14 border-b border-border flex items-center px-4 gap-3 bg-card md:hidden">
             <MobileMenu />
             <img src="/netlify-logo.svg" alt="Netlify" className="h-5 object-contain" />
+            <MobileSearchButton />
           </header>
           <main className="flex-1 overflow-y-auto">{children}</main>
         </div>
       </div>
     </SidebarContext.Provider>
+  )
+}
+
+function MobileSearchButton() {
+  const { openSearch } = useSearch()
+  return (
+    <button
+      onClick={openSearch}
+      aria-label="Search"
+      className="ml-auto p-1.5 rounded-md hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+    >
+      <Search className="h-5 w-5" />
+    </button>
   )
 }
 
