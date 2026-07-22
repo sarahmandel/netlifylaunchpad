@@ -363,7 +363,7 @@ export const modules: Module[] = [
       'Spam filtering with honeypot fields, Akismet, and reCAPTCHA.',
     ],
     bestPractices: [
-      'Add spam prevention (honeypot plus Akismet/reCAPTCHA) before you promote a form.',
+      'Add a honeypot field, and optionally either Akismet (default) or your own reCAPTCHA — note enabling reCAPTCHA turns off Akismet for that form.',
       'Create a custom success page so submitters get clear confirmation.',
       'Include an email field so you can reply to submitters directly.',
       'Define a process for handling sensitive form data and who can access submissions.',
@@ -496,7 +496,7 @@ export const modules: Module[] = [
     ],
     bestPractices: [
       'Keep domain, DNS, deploys, and certificates in one control plane where possible to simplify operations.',
-      'When using external DNS, confirm your primary domain is a subdomain or www per the docs guidance.',
+      'If your external DNS provider can\'t ALIAS the bare domain, set `www` as your primary domain and redirect the apex to it.',
       'Set up a custom 404 page and consistent trailing-slash behavior before launch.',
       'Manage certificates carefully when you have many domain aliases to avoid rate limits.',
     ],
@@ -559,6 +559,7 @@ export const modules: Module[] = [
       'Real User Monitoring (RUM) for real-world performance and usability.',
       'Observability dashboard, function metrics, and logs.',
       'Log Drains to stream logs to third-party monitoring services.',
+      'Lighthouse scoring: run Google Lighthouse audits at deploy time to track performance, accessibility, SEO, and best-practices scores.',
     ],
     bestPractices: [
       'Enable Web Analytics early to establish a traffic and performance baseline.',
@@ -572,12 +573,14 @@ export const modules: Module[] = [
       { label: 'Real User Monitoring', url: `${D}/manage/monitoring/real-user-monitoring/` },
       { label: 'Observability', url: `${D}/manage/monitoring/observability/overview/` },
       { label: 'Logs & Log Drains', url: `${D}/manage/monitoring/log-drains/` },
+      { label: 'Lighthouse', url: `${D}/manage/monitoring/lighthouse/` },
       { label: 'Notifications', url: `${D}/manage/monitoring/notifications/` },
     ],
     checklist: [
       'Enable Web Analytics on a project.',
       'Review the Observability dashboard and function metrics.',
       'Set up a deploy notification (e.g. Slack or email).',
+      'Enable the Lighthouse plugin and review scores on a deploy.',
       'Evaluate whether Log Drains fit your monitoring stack.',
     ],
     quiz: [
@@ -699,7 +702,7 @@ export const modules: Module[] = [
       'Secrets Controller and secret scanning of code and build output.',
       'Content Security Policy (CSP) to mitigate XSS and data exfiltration.',
       'Rate limiting, traffic rules, and a web application firewall.',
-      'Private connectivity and a security scorecard to track posture.',
+      'Private connectivity (paid add-on) and a security scorecard to track posture.',
     ],
     bestPractices: [
       'Store secrets via the Netlify UI, CLI, or API — never in netlify.toml, .env files in the repo, or source code.',
@@ -715,7 +718,7 @@ export const modules: Module[] = [
       { label: 'Rate limiting', url: `${D}/manage/security/secure-access-to-sites/rate-limiting/` },
       { label: 'Traffic rules', url: `${D}/manage/security/secure-access-to-sites/traffic-rules/` },
       { label: 'Web application firewall', url: `${D}/manage/security/secure-access-to-sites/web-application-firewall/` },
-      { label: 'Private connectivity', url: `${D}/manage/security/private-connectivity/` },
+      { label: 'Private connectivity (paid add-on)', url: `${D}/manage/security/private-connectivity/` },
       { label: 'Security scorecard', url: `${D}/manage/security/security-scorecard/` },
     ],
     checklist: [
