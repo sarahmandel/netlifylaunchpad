@@ -1,6 +1,5 @@
 import { createFileRoute, useParams, Link, useNavigate } from '@tanstack/react-router'
 import {
-  Clock,
   BookOpen,
   Lightbulb,
   CheckCircle2,
@@ -62,9 +61,6 @@ function ModulePage() {
               </span>
             )}
           </div>
-          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground bg-secondary px-2.5 py-1 rounded-full ml-auto">
-            <Clock className="h-3 w-3" /> {mod.time}
-          </span>
         </div>
         <h1 className="text-2xl font-bold">{mod.title}</h1>
         <p className="text-muted-foreground mt-1">{mod.overview}</p>
