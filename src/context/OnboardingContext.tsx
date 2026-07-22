@@ -2,30 +2,45 @@ import { createContext, useContext, useState, useCallback, useEffect, useRef, ty
 import {
   loadProgress,
   saveProgress,
-  defaultBranding,
-  getDefaultStages,
-  type BrandingConfig,
+  getDefaultModules,
   type OnboardingState,
-  type Track,
   type UserProgress,
 } from '@/lib/progress-store'
+import { modules } from '@/lib/curriculum'
+import type { Role } from '@/lib/curriculum'
 
-export type { Track } from '@/lib/progress-store'
+export type { Role } from '@/lib/curriculum'
 
 type OnboardingContextType = {
-  stages: OnboardingState
-  track: Track
-  setTrack: (track: Track) => void
-  branding: BrandingConfig
-  setBranding: (branding: Partial<BrandingConfig>) => void
-  passQuiz: (stage: number) => void
-  completeActivity: (stage: number) => void
-  toggleManagerVerification: (stage: number) => void
+  moduleState: OnboardingState
+  role: Role | null
+  setRole: (role: Role | null) => void
+  passQuiz: (moduleId: string) => void
+  completeChecklist: (moduleId: string) => void
+  isModuleComplete: (moduleId: string) => boolean
+  completedCount: () => number
+  totalCount: () => number
   getProgress: () => number
-  allVerified: () => boolean
+  allComplete: () => boolean
 }
 
-const CACHE_KEY = 'netlify-onboarding-progress-cache'
+const CACHE_KEY = 'netlify-onboarding-progress-v2'
+const CLIENT_KEY = 'netlify-onboarding-client-id'
+
+function getClientId(): string {
+  if (typeof window === 'undefined') return ''
+  try {
+    let id = localStorage.getItem(CLIENT_KEY)
+    if (!id) {
+      const c = globalThis.crypto
+      id = c?.randomUUID ? c.randomUUID() : `c-${Date.now()}-${Math.floor(Math.random() * 1e9)}`
+      localStorage.setItem(CLIENT_KEY, id)
+    }
+    return id
+  } catch {
+    return ''
+  }
+}
 
 function loadCache(): UserProgress | null {
   try {
@@ -51,86 +66,107 @@ export function useOnboarding() {
 
 export function OnboardingProvider({ children }: { children: ReactNode }) {
   const cached = typeof window !== 'undefined' ? loadCache() : null
-  const [state, setState] = useState<OnboardingState>(cached?.stages ?? getDefaultStages())
-  const [track, setTrackState] = useState<Track>(cached?.track ?? null)
-  const [branding, setBrandingState] = useState<BrandingConfig>(cached?.branding ?? defaultBranding)
+  const [moduleState, setModuleState] = useState<OnboardingState>(cached?.modules ?? getDefaultModules())
+  const [role, setRoleState] = useState<Role | null>(cached?.role ?? null)
   const [hydrated, setHydrated] = useState(false)
+  const clientId = useRef<string>('')
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
+    clientId.current = getClientId()
     let cancelled = false
-    loadProgress()
+    loadProgress({ data: clientId.current })
       .then((data) => {
         if (cancelled || !data) return
-        setState(data.stages)
-        setTrackState(data.track)
-        setBrandingState(data.branding)
+        setModuleState(data.modules)
+        setRoleState(data.role)
         writeCache(data)
       })
       .catch(() => {})
       .finally(() => {
         if (!cancelled) setHydrated(true)
       })
-    return () => { cancelled = true }
+    return () => {
+      cancelled = true
+    }
   }, [])
 
-  const persist = useCallback((next: UserProgress) => {
-    writeCache(next)
-    if (!hydrated) return
-    if (saveTimer.current) clearTimeout(saveTimer.current)
-    saveTimer.current = setTimeout(() => {
-      saveProgress({ data: next }).catch(() => {})
-    }, 400)
-  }, [hydrated])
+  const persist = useCallback(
+    (next: UserProgress) => {
+      writeCache(next)
+      if (!hydrated || !clientId.current) return
+      if (saveTimer.current) clearTimeout(saveTimer.current)
+      saveTimer.current = setTimeout(() => {
+        saveProgress({ data: { clientId: clientId.current, progress: next } }).catch(() => {})
+      }, 400)
+    },
+    [hydrated],
+  )
 
-  const setTrack = useCallback((t: Track) => {
-    setTrackState(t)
-    persist({ stages: state, track: t, branding })
-  }, [state, branding, persist])
+  const setRole = useCallback(
+    (r: Role | null) => {
+      setRoleState(r)
+      persist({ role: r, modules: moduleState })
+    },
+    [moduleState, persist],
+  )
 
-  const setBranding = useCallback((partial: Partial<BrandingConfig>) => {
-    setBrandingState(prev => {
-      const next = { ...prev, ...partial }
-      persist({ stages: state, track, branding: next })
-      return next
-    })
-  }, [state, track, persist])
+  const passQuiz = useCallback(
+    (moduleId: string) => {
+      setModuleState((prev) => {
+        const next = { ...prev, [moduleId]: { ...prev[moduleId], quizPassed: true } }
+        persist({ role, modules: next })
+        return next
+      })
+    },
+    [role, persist],
+  )
 
-  const passQuiz = useCallback((stage: number) => {
-    setState(prev => {
-      const next = { ...prev, [stage]: { ...prev[stage], quizPassed: true } }
-      persist({ stages: next, track, branding })
-      return next
-    })
-  }, [track, branding, persist])
+  const completeChecklist = useCallback(
+    (moduleId: string) => {
+      setModuleState((prev) => {
+        const next = { ...prev, [moduleId]: { ...prev[moduleId], checklistCompleted: true } }
+        persist({ role, modules: next })
+        return next
+      })
+    },
+    [role, persist],
+  )
 
-  const completeActivity = useCallback((stage: number) => {
-    setState(prev => {
-      const next = { ...prev, [stage]: { ...prev[stage], activityCompleted: true } }
-      persist({ stages: next, track, branding })
-      return next
-    })
-  }, [track, branding, persist])
+  const isModuleComplete = useCallback(
+    (moduleId: string) => {
+      const s = moduleState[moduleId]
+      return !!s && s.quizPassed && s.checklistCompleted
+    },
+    [moduleState],
+  )
 
-  const toggleManagerVerification = useCallback((stage: number) => {
-    setState(prev => {
-      const next = { ...prev, [stage]: { ...prev[stage], managerVerified: !prev[stage].managerVerified } }
-      persist({ stages: next, track, branding })
-      return next
-    })
-  }, [track, branding, persist])
-
-  const getProgress = useCallback(() => {
-    const verified = Object.values(state).filter(s => s.managerVerified).length
-    return (verified / 4) * 100
-  }, [state])
-
-  const allVerified = useCallback(() => {
-    return Object.values(state).every(s => s.managerVerified)
-  }, [state])
+  const totalCount = useCallback(() => modules.length, [])
+  const completedCount = useCallback(
+    () => modules.filter((m) => isModuleComplete(m.id)).length,
+    [isModuleComplete],
+  )
+  const getProgress = useCallback(
+    () => Math.round((completedCount() / modules.length) * 100),
+    [completedCount],
+  )
+  const allComplete = useCallback(() => completedCount() === modules.length, [completedCount])
 
   return (
-    <OnboardingContext.Provider value={{ stages: state, track, setTrack, branding, setBranding, passQuiz, completeActivity, toggleManagerVerification, getProgress, allVerified }}>
+    <OnboardingContext.Provider
+      value={{
+        moduleState,
+        role,
+        setRole,
+        passQuiz,
+        completeChecklist,
+        isModuleComplete,
+        completedCount,
+        totalCount,
+        getProgress,
+        allComplete,
+      }}
+    >
       {children}
     </OnboardingContext.Provider>
   )

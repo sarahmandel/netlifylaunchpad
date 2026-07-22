@@ -1,23 +1,28 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Award, Download, Printer, Lock, Check } from 'lucide-react'
+import { Award, Download, Printer, Lock } from 'lucide-react'
 import { useOnboarding } from '@/context/OnboardingContext'
+import { sectionOrder, sectionMeta } from '@/lib/curriculum'
 
 export const Route = createFileRoute('/certificate')({
   component: CertificatePage,
 })
 
 function CertificatePage() {
-  const { allVerified } = useOnboarding()
-  const unlocked = allVerified()
+  const { allComplete, completedCount, totalCount } = useOnboarding()
+  const unlocked = allComplete()
 
   if (!unlocked) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] animate-fade-in">
         <div className="rounded-lg border border-border bg-card p-12 text-center max-w-md space-y-4">
           <Lock className="h-16 w-16 text-muted-foreground mx-auto" />
-          <h1 className="text-2xl font-bold">Certificate Locked</h1>
+          <h1 className="text-2xl font-bold">Certificate locked</h1>
           <p className="text-muted-foreground">
-            Complete all 4 stages (~16–24 hours) and have your manager verify each one to unlock your completion certificate.
+            Complete all {totalCount()} modules — pass each knowledge check and finish each activity list — to unlock your
+            completion certificate.
+          </p>
+          <p className="text-sm font-mono text-primary">
+            {completedCount()}/{totalCount()} modules complete
           </p>
         </div>
       </div>
@@ -55,28 +60,25 @@ function CertificatePage() {
             <p className="text-sm text-muted-foreground uppercase tracking-widest font-medium print:text-gray-500">
               Certificate of Completion
             </p>
-            <h1 className="text-3xl font-bold mt-2 text-gradient-teal print:text-black">
-              Netlify Engineering Onboarding
-            </h1>
+            <h1 className="text-3xl font-bold mt-2 text-gradient-teal print:text-black">Netlify Platform Onboarding</h1>
           </div>
 
           <div className="border-t border-border pt-4 space-y-1 print:border-gray-300">
             <p className="text-muted-foreground text-sm print:text-gray-600">
-              This certifies that the engineer has successfully completed
+              This certifies successful completion of all {totalCount()} modules across the
             </p>
             <p className="text-muted-foreground text-sm print:text-gray-600">
-              all 4 stages (~16–24 hours) of the Netlify Engineering Onboarding Program.
+              Create, Ship, Scale, and Secure sections of the Netlify platform.
             </p>
           </div>
 
-          <div className="flex items-center justify-center gap-2 text-sm text-primary font-medium print:text-black">
-            <span className="inline-flex items-center gap-1"><Check className="h-4 w-4" /> Foundation</span>
-            <span>•</span>
-            <span className="inline-flex items-center gap-1"><Check className="h-4 w-4" /> Deployment</span>
-            <span>•</span>
-            <span className="inline-flex items-center gap-1"><Check className="h-4 w-4" /> CLI</span>
-            <span>•</span>
-            <span className="inline-flex items-center gap-1"><Check className="h-4 w-4" /> Advanced</span>
+          <div className="flex items-center justify-center gap-2 text-sm text-primary font-medium print:text-black flex-wrap">
+            {sectionOrder.map((s, i) => (
+              <span key={s} className="inline-flex items-center gap-2">
+                {i > 0 && <span className="text-muted-foreground">•</span>}
+                {sectionMeta[s].label}
+              </span>
+            ))}
           </div>
 
           <p className="text-xs text-muted-foreground print:text-gray-500">
