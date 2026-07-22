@@ -9,18 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SupportRouteImport } from './routes/support'
 import { Route as PromptsRouteImport } from './routes/prompts'
 import { Route as ChecklistRouteImport } from './routes/checklist'
-import { Route as CertificateRouteImport } from './routes/certificate'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ModuleModuleIdRouteImport } from './routes/module.$moduleId'
 
-const SupportRoute = SupportRouteImport.update({
-  id: '/support',
-  path: '/support',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PromptsRoute = PromptsRouteImport.update({
   id: '/prompts',
   path: '/prompts',
@@ -29,11 +22,6 @@ const PromptsRoute = PromptsRouteImport.update({
 const ChecklistRoute = ChecklistRouteImport.update({
   id: '/checklist',
   path: '/checklist',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CertificateRoute = CertificateRouteImport.update({
-  id: '/certificate',
-  path: '/certificate',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -49,74 +37,45 @@ const ModuleModuleIdRoute = ModuleModuleIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/certificate': typeof CertificateRoute
   '/checklist': typeof ChecklistRoute
   '/prompts': typeof PromptsRoute
-  '/support': typeof SupportRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/certificate': typeof CertificateRoute
   '/checklist': typeof ChecklistRoute
   '/prompts': typeof PromptsRoute
-  '/support': typeof SupportRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/certificate': typeof CertificateRoute
   '/checklist': typeof ChecklistRoute
   '/prompts': typeof PromptsRoute
-  '/support': typeof SupportRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/certificate'
-    | '/checklist'
-    | '/prompts'
-    | '/support'
-    | '/module/$moduleId'
+  fullPaths: '/' | '/checklist' | '/prompts' | '/module/$moduleId'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/certificate'
-    | '/checklist'
-    | '/prompts'
-    | '/support'
-    | '/module/$moduleId'
+  to: '/' | '/checklist' | '/prompts' | '/module/$moduleId'
   id:
     | '__root__'
     | '/'
-    | '/certificate'
     | '/checklist'
     | '/prompts'
-    | '/support'
     | '/module/$moduleId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CertificateRoute: typeof CertificateRoute
   ChecklistRoute: typeof ChecklistRoute
   PromptsRoute: typeof PromptsRoute
-  SupportRoute: typeof SupportRoute
   ModuleModuleIdRoute: typeof ModuleModuleIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/support': {
-      id: '/support'
-      path: '/support'
-      fullPath: '/support'
-      preLoaderRoute: typeof SupportRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/prompts': {
       id: '/prompts'
       path: '/prompts'
@@ -129,13 +88,6 @@ declare module '@tanstack/react-router' {
       path: '/checklist'
       fullPath: '/checklist'
       preLoaderRoute: typeof ChecklistRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/certificate': {
-      id: '/certificate'
-      path: '/certificate'
-      fullPath: '/certificate'
-      preLoaderRoute: typeof CertificateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -157,10 +109,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CertificateRoute: CertificateRoute,
   ChecklistRoute: ChecklistRoute,
   PromptsRoute: PromptsRoute,
-  SupportRoute: SupportRoute,
   ModuleModuleIdRoute: ModuleModuleIdRoute,
 }
 export const routeTree = rootRouteImport
