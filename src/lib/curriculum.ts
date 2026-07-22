@@ -38,7 +38,6 @@ export type Module = {
   title: string
   tagline: string
   icon: LucideIcon
-  time: string
   overview: string
   /** Per-role framing — why this module matters for each audience. */
   roleFocus: Record<Role, string>
@@ -94,7 +93,6 @@ export const modules: Module[] = [
     title: 'Platform Foundations',
     tagline: 'What Netlify is and how work flows through it',
     icon: Compass,
-    time: '45–60 min',
     overview:
       'Netlify is a composable web platform: you connect a Git repository, Netlify builds it, and every deploy is an immutable, atomic snapshot served from a global edge network. Start here to build a shared mental model of primitives, the deploy lifecycle, and the vocabulary the rest of onboarding uses.',
     roleFocus: {
@@ -160,7 +158,6 @@ export const modules: Module[] = [
     title: 'Build with AI',
     tagline: 'Agent Runners, AI Gateway, MCP, and Skills',
     icon: Bot,
-    time: '45–60 min',
     overview:
       'Netlify lets you build with AI in two directions: use AI agents to write and ship your code (Agent Runners, the MCP Server, and Netlify Skills), and add AI features to your app without managing API keys (AI Gateway). This module primes every role to work alongside AI on the platform.',
     roleFocus: {
@@ -225,7 +222,6 @@ export const modules: Module[] = [
     title: 'Functions, Edge & Async',
     tagline: 'Serverless, edge, background, and scheduled compute',
     icon: FunctionSquare,
-    time: '60–90 min',
     overview:
       'Netlify runs your server-side logic without a server to manage. Serverless Functions handle on-demand APIs, Edge Functions run low-latency logic close to visitors, and Async Workloads (including background and scheduled functions) handle long-running and event-driven jobs.',
     roleFocus: {
@@ -287,7 +283,6 @@ export const modules: Module[] = [
     title: 'Data, Storage & Caching',
     tagline: 'Netlify Database, Blobs, Image CDN, and caching',
     icon: Database,
-    time: '60–90 min',
     overview:
       'Netlify offers managed storage primitives so you rarely need to leave the platform. Netlify Database is a zero-config Postgres with isolated database branches; Netlify Blobs is a key/value object store for unstructured data; the Image CDN transforms images on demand; and caching controls keep delivery fast.',
     roleFocus: {
@@ -347,7 +342,6 @@ export const modules: Module[] = [
     title: 'Forms & User Input',
     tagline: 'Capture submissions without backend code',
     icon: FormInput,
-    time: '30–45 min',
     overview:
       'Netlify Forms captures submissions straight from your HTML — no backend code or third-party form service. You get submission storage, email and Slack notifications, spam filtering, and API access to submissions.',
     roleFocus: {
@@ -408,7 +402,6 @@ export const modules: Module[] = [
     title: 'Deploys, Previews & Config',
     tagline: 'Continuous deployment, contexts, and rollbacks',
     icon: GitBranch,
-    time: '60–90 min',
     overview:
       'Shipping on Netlify means Git-connected continuous deployment. Every push builds and deploys; pull requests get isolated Deploy Previews; branches get branch deploys; and any prior deploy can be rolled back instantly. Build configuration lives in netlify.toml, and deploy contexts let settings differ per environment.',
     roleFocus: {
@@ -479,7 +472,6 @@ export const modules: Module[] = [
     title: 'Domains, HTTPS & Routing',
     tagline: 'Custom domains, DNS, certificates, redirects',
     icon: Globe,
-    time: '45–60 min',
     overview:
       'Netlify serves your site from a global edge network with automatic HTTPS. This module covers connecting custom domains, choosing Netlify DNS vs. external DNS, certificate management, redirects and rewrites, and branded deploy subdomains.',
     roleFocus: {
@@ -545,7 +537,6 @@ export const modules: Module[] = [
     title: 'Monitoring & Observability',
     tagline: 'Analytics, RUM, logs, and metrics',
     icon: Activity,
-    time: '45–60 min',
     overview:
       'Once you are live, you need visibility. Netlify offers server-side Web Analytics, Real User Monitoring, an Observability dashboard, function metrics, logs and log drains, Lighthouse scoring, and deploy notifications so teams can spot and diagnose issues.',
     roleFocus: {
@@ -613,7 +604,6 @@ export const modules: Module[] = [
     title: 'Access & Team Governance',
     tagline: 'Basic auth, RBAC, SSO, 2FA, audit logs',
     icon: ShieldCheck,
-    time: '45–60 min',
     overview:
       'Control who can reach your sites and who can act on your team. Netlify offers site access controls (password protection and HTTP basic authentication), role-based access control, SAML SSO and Directory Sync, enforced two-factor authentication, and a team audit log.',
     roleFocus: {
@@ -686,7 +676,6 @@ export const modules: Module[] = [
     title: 'Secure Builds & Data',
     tagline: 'Secrets, scanning, CSP, and traffic protection',
     icon: KeyRound,
-    time: '45–60 min',
     overview:
       'Protect your code, secrets, and users. Netlify provides the Secrets Controller and secret scanning, Content Security Policy support, rate limiting, traffic rules and a web application firewall, private connectivity, and a security scorecard to track your posture.',
     roleFocus: {
