@@ -72,12 +72,11 @@ export function SearchProvider({ children }: { children: ReactNode }) {
   )
 }
 
-function highlight(text: string, terms: string[]) {
-  if (terms.length === 0) return text
-  const pattern = new RegExp(`(${terms.map(escapeRegExp).join('|')})`, 'gi')
+function highlight(text: string, pattern: RegExp | null, termSet: Set<string>) {
+  if (!pattern) return text
   const parts = text.split(pattern)
   return parts.map((part, i) =>
-    terms.some((t) => t.toLowerCase() === part.toLowerCase()) ? (
+    termSet.has(part.toLowerCase()) ? (
       <mark key={i} className="bg-primary/25 text-foreground rounded px-0.5">
         {part}
       </mark>
@@ -97,9 +96,21 @@ function SearchCommand({ onClose }: { onClose: () => void }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
   const listRef = useRef<HTMLDivElement>(null)
+  // Tracks the last real pointer position. Browsers (notably Chrome) fire a
+  // synthetic mousemove when scrolling moves content under a stationary cursor;
+  // without this guard, keyboard navigation would scroll the list and snap the
+  // selection back to whatever sits under the mouse — the "glitch".
+  const lastPointer = useRef<{ x: number; y: number } | null>(null)
 
   const terms = useMemo(() => query.trim().toLowerCase().split(/\s+/).filter(Boolean), [query])
   const results = useMemo(() => searchAll(query), [query])
+
+  // Build the highlight matcher once per query instead of once per rendered row.
+  const highlightPattern = useMemo(
+    () => (terms.length ? new RegExp(`(${terms.map(escapeRegExp).join('|')})`, 'gi') : null),
+    [terms],
+  )
+  const termSet = useMemo(() => new Set(terms), [terms])
 
   useEffect(() => {
     inputRef.current?.focus()
@@ -110,11 +121,16 @@ function SearchCommand({ onClose }: { onClose: () => void }) {
     setActiveIndex(0)
   }, [query])
 
-  // Keep the highlighted row scrolled into view.
-  useEffect(() => {
-    const el = listRef.current?.querySelector<HTMLElement>(`[data-index="${activeIndex}"]`)
-    el?.scrollIntoView({ block: 'nearest' })
-  }, [activeIndex, results])
+  const onPointerMove = useCallback(
+    (index: number, e: React.MouseEvent) => {
+      const prev = lastPointer.current
+      // Ignore synthetic mousemoves that carry no actual movement.
+      if (prev && prev.x === e.clientX && prev.y === e.clientY) return
+      lastPointer.current = { x: e.clientX, y: e.clientY }
+      setActiveIndex(index)
+    },
+    [],
+  )
 
   const select = useCallback(
     (result: SearchResult | undefined) => {
@@ -126,13 +142,26 @@ function SearchCommand({ onClose }: { onClose: () => void }) {
     [navigate, onClose],
   )
 
+  const scrollIntoView = useCallback((index: number) => {
+    const el = listRef.current?.querySelector<HTMLElement>(`[data-index="${index}"]`)
+    el?.scrollIntoView({ block: 'nearest' })
+  }, [])
+
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault()
-      setActiveIndex((i) => Math.min(i + 1, results.length - 1))
+      setActiveIndex((i) => {
+        const next = Math.min(i + 1, results.length - 1)
+        scrollIntoView(next)
+        return next
+      })
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
-      setActiveIndex((i) => Math.max(i - 1, 0))
+      setActiveIndex((i) => {
+        const next = Math.max(i - 1, 0)
+        scrollIntoView(next)
+        return next
+      })
     } else if (e.key === 'Enter') {
       e.preventDefault()
       select(results[activeIndex])
@@ -218,7 +247,7 @@ function SearchCommand({ onClose }: { onClose: () => void }) {
                     key={result.id}
                     data-index={index}
                     onClick={() => select(result)}
-                    onMouseMove={() => setActiveIndex(index)}
+                    onMouseMove={(e) => onPointerMove(index, e)}
                     className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
                       active ? 'bg-secondary' : 'hover:bg-secondary/60'
                     }`}
@@ -232,11 +261,11 @@ function SearchCommand({ onClose }: { onClose: () => void }) {
                     </span>
                     <span className="flex-1 min-w-0">
                       <span className="block text-sm font-medium truncate">
-                        {highlight(result.title, terms)}
+                        {highlight(result.title, highlightPattern, termSet)}
                       </span>
                       {result.subtitle && (
                         <span className="block text-xs text-muted-foreground truncate">
-                          {highlight(result.subtitle, terms)}
+                          {highlight(result.subtitle, highlightPattern, termSet)}
                         </span>
                       )}
                     </span>
