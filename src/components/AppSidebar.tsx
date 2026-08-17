@@ -192,6 +192,7 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 
       <div className="px-3 space-y-0.5 mt-6" onClick={onNavigate}>
         <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Resources</p>
+        <NavLink to="/docs" icon={BookOpen} label="Documentation" />
         <NavLink to="/checklist" icon={ClipboardCheck} label="Checklists" />
         <NavLink to="/prompts" icon={MessageSquare} label="Prompt Library" />
       </div>

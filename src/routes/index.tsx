@@ -1,6 +1,7 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Clock, ArrowRight, CircleCheck, LoaderCircle, BookOpen, MessageSquare } from 'lucide-react'
+import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
+import { Clock, ArrowRight, CircleCheck, LoaderCircle, BookOpen, MessageSquare, Bot } from 'lucide-react'
 import { useOnboarding } from '@/context/OnboardingContext'
+import { useDocsAssistant } from '@/components/DocsAssistant'
 import {
   modules,
   roles,
@@ -65,6 +66,7 @@ function PriorityBadge({ role, moduleId }: { role: Role; moduleId: string }) {
 function Dashboard() {
   const { role, setRole, isModuleComplete, moduleState, getProgress, completedCount, totalCount } = useOnboarding()
   const navigate = useNavigate()
+  const { openAssistant } = useDocsAssistant()
   const progress = getProgress()
 
   const status = (id: string) => {
@@ -168,13 +170,38 @@ function Dashboard() {
         <h2 className="text-lg font-semibold">Keep learning</h2>
         <p className="text-sm text-muted-foreground">Official Netlify resources to go deeper as you build.</p>
         <div className="grid gap-3 sm:grid-cols-2">
+          <Link
+            to="/docs"
+            className="flex items-center gap-3 rounded-lg border border-border p-4 hover:bg-secondary/50 transition-colors"
+          >
+            <div className="flex items-center justify-center h-9 w-9 rounded-lg gradient-teal text-primary-foreground shrink-0">
+              <BookOpen className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="text-sm font-medium">Docs library</p>
+              <p className="text-xs text-muted-foreground">Every doc this onboarding links to</p>
+            </div>
+          </Link>
+          <button
+            type="button"
+            onClick={() => openAssistant()}
+            className="flex items-center gap-3 rounded-lg border border-border p-4 text-left hover:bg-secondary/50 transition-colors"
+          >
+            <div className="flex items-center justify-center h-9 w-9 rounded-lg gradient-teal text-primary-foreground shrink-0">
+              <Bot className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="text-sm font-medium">Docs assistant</p>
+              <p className="text-xs text-muted-foreground">Ask a question, get sourced answers</p>
+            </div>
+          </button>
           <a
             href="https://docs.netlify.com"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-3 rounded-lg border border-border p-4 hover:bg-secondary/50 transition-colors"
           >
-            <div className="flex items-center justify-center h-9 w-9 rounded-lg gradient-teal text-primary-foreground shrink-0">
+            <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-secondary text-muted-foreground shrink-0">
               <BookOpen className="h-4 w-4" />
             </div>
             <div>

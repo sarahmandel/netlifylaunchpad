@@ -1,6 +1,7 @@
 import { createFileRoute, useParams, Link, useNavigate } from '@tanstack/react-router'
 import {
   BookOpen,
+  Bot,
   Lightbulb,
   CheckCircle2,
   ExternalLink,
@@ -11,6 +12,7 @@ import {
 import { useOnboarding } from '@/context/OnboardingContext'
 import { KnowledgeCheck } from '@/components/KnowledgeCheck'
 import { ActivityChecklist } from '@/components/ActivityChecklist'
+import { useDocsAssistant } from '@/components/DocsAssistant'
 import { getModule, modules, roles, priorityLabel } from '@/lib/curriculum'
 
 export const Route = createFileRoute('/module/$moduleId')({
@@ -21,6 +23,7 @@ function ModulePage() {
   const { moduleId } = useParams({ from: '/module/$moduleId' })
   const mod = getModule(moduleId)
   const { role, moduleState, passQuiz, completeChecklist, isModuleComplete } = useOnboarding()
+  const { openAssistant } = useDocsAssistant()
   const navigate = useNavigate()
 
   if (!mod) {
@@ -112,9 +115,18 @@ function ModulePage() {
       </div>
 
       <div className="rounded-lg border border-border bg-card p-6 space-y-3">
-        <h2 className="text-lg font-semibold flex items-center gap-2">
-          <BookOpen className="h-5 w-5 text-primary shrink-0" /> Documentation
-        </h2>
+        <div className="flex items-center justify-between gap-3 flex-wrap">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <BookOpen className="h-5 w-5 text-primary shrink-0" /> Documentation
+          </h2>
+          <button
+            type="button"
+            onClick={() => openAssistant({ moduleId: mod.id })}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-medium hover:bg-primary/20 transition-colors"
+          >
+            <Bot className="h-3.5 w-3.5 text-primary" /> Ask about these docs
+          </button>
+        </div>
         <p className="text-sm text-muted-foreground">Read these official Netlify docs before completing the activities.</p>
         <ul className="space-y-2 text-sm">
           {mod.docs.map((d, i) => (

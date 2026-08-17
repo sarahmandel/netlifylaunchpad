@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   ClipboardCheck,
   MessageSquare,
+  BookOpen,
   type LucideIcon,
 } from 'lucide-react'
 import { modules, sectionMeta } from '@/lib/curriculum'
@@ -62,6 +63,14 @@ function build(): SearchRecord[] {
       keywords: 'home overview progress roles modules getting started',
       icon: LayoutDashboard,
       to: '/',
+    },
+    {
+      id: 'page-docs',
+      title: 'Documentation',
+      subtitle: 'Docs library and the docs assistant',
+      keywords: 'docs documentation library assistant chat ai ask reference links',
+      icon: BookOpen,
+      to: '/docs',
     },
     {
       id: 'page-checklist',
