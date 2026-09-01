@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import { Clock, ArrowRight, CircleCheck, LoaderCircle, BookOpen, MessageSquare } from 'lucide-react'
+import { ArrowRight, CircleCheck, LoaderCircle, BookOpen, MessageSquare } from 'lucide-react'
 import { useOnboarding } from '@/context/OnboardingContext'
 import {
   modules,
@@ -148,10 +148,7 @@ function Dashboard() {
                           {role && <PriorityBadge role={role} moduleId={m.id} />}
                         </div>
                         <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{m.tagline}</p>
-                        <div className="flex items-center justify-between mt-3">
-                          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                            <Clock className="h-3 w-3" /> {m.time}
-                          </span>
+                        <div className="flex items-center justify-end mt-3">
                           <ArrowRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
                       </div>
