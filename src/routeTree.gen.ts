@@ -9,14 +9,21 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RolesRouteImport } from './routes/roles'
 import { Route as PromptsRouteImport } from './routes/prompts'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as ChecklistRouteImport } from './routes/checklist'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PathRoleIdRouteImport } from './routes/path.$roleId'
 import { Route as ModuleModuleIdRouteImport } from './routes/module.$moduleId'
+import { Route as ApiSearchChatRouteImport } from './routes/api.search-chat'
 import { Route as ApiDocsChatRouteImport } from './routes/api.docs-chat'
 
+const RolesRoute = RolesRouteImport.update({
+  id: '/roles',
+  path: '/roles',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PromptsRoute = PromptsRouteImport.update({
   id: '/prompts',
   path: '/prompts',
@@ -47,6 +54,11 @@ const ModuleModuleIdRoute = ModuleModuleIdRouteImport.update({
   path: '/module/$moduleId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSearchChatRoute = ApiSearchChatRouteImport.update({
+  id: '/api/search-chat',
+  path: '/api/search-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiDocsChatRoute = ApiDocsChatRouteImport.update({
   id: '/api/docs-chat',
   path: '/api/docs-chat',
@@ -58,7 +70,9 @@ export interface FileRoutesByFullPath {
   '/checklist': typeof ChecklistRoute
   '/docs': typeof DocsRoute
   '/prompts': typeof PromptsRoute
+  '/roles': typeof RolesRoute
   '/api/docs-chat': typeof ApiDocsChatRoute
+  '/api/search-chat': typeof ApiSearchChatRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
   '/path/$roleId': typeof PathRoleIdRoute
 }
@@ -67,7 +81,9 @@ export interface FileRoutesByTo {
   '/checklist': typeof ChecklistRoute
   '/docs': typeof DocsRoute
   '/prompts': typeof PromptsRoute
+  '/roles': typeof RolesRoute
   '/api/docs-chat': typeof ApiDocsChatRoute
+  '/api/search-chat': typeof ApiSearchChatRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
   '/path/$roleId': typeof PathRoleIdRoute
 }
@@ -77,7 +93,9 @@ export interface FileRoutesById {
   '/checklist': typeof ChecklistRoute
   '/docs': typeof DocsRoute
   '/prompts': typeof PromptsRoute
+  '/roles': typeof RolesRoute
   '/api/docs-chat': typeof ApiDocsChatRoute
+  '/api/search-chat': typeof ApiSearchChatRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
   '/path/$roleId': typeof PathRoleIdRoute
 }
@@ -88,7 +106,9 @@ export interface FileRouteTypes {
     | '/checklist'
     | '/docs'
     | '/prompts'
+    | '/roles'
     | '/api/docs-chat'
+    | '/api/search-chat'
     | '/module/$moduleId'
     | '/path/$roleId'
   fileRoutesByTo: FileRoutesByTo
@@ -97,7 +117,9 @@ export interface FileRouteTypes {
     | '/checklist'
     | '/docs'
     | '/prompts'
+    | '/roles'
     | '/api/docs-chat'
+    | '/api/search-chat'
     | '/module/$moduleId'
     | '/path/$roleId'
   id:
@@ -106,7 +128,9 @@ export interface FileRouteTypes {
     | '/checklist'
     | '/docs'
     | '/prompts'
+    | '/roles'
     | '/api/docs-chat'
+    | '/api/search-chat'
     | '/module/$moduleId'
     | '/path/$roleId'
   fileRoutesById: FileRoutesById
@@ -116,13 +140,22 @@ export interface RootRouteChildren {
   ChecklistRoute: typeof ChecklistRoute
   DocsRoute: typeof DocsRoute
   PromptsRoute: typeof PromptsRoute
+  RolesRoute: typeof RolesRoute
   ApiDocsChatRoute: typeof ApiDocsChatRoute
+  ApiSearchChatRoute: typeof ApiSearchChatRoute
   ModuleModuleIdRoute: typeof ModuleModuleIdRoute
   PathRoleIdRoute: typeof PathRoleIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/roles': {
+      id: '/roles'
+      path: '/roles'
+      fullPath: '/roles'
+      preLoaderRoute: typeof RolesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/prompts': {
       id: '/prompts'
       path: '/prompts'
@@ -165,6 +198,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ModuleModuleIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/search-chat': {
+      id: '/api/search-chat'
+      path: '/api/search-chat'
+      fullPath: '/api/search-chat'
+      preLoaderRoute: typeof ApiSearchChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/docs-chat': {
       id: '/api/docs-chat'
       path: '/api/docs-chat'
@@ -180,7 +220,9 @@ const rootRouteChildren: RootRouteChildren = {
   ChecklistRoute: ChecklistRoute,
   DocsRoute: DocsRoute,
   PromptsRoute: PromptsRoute,
+  RolesRoute: RolesRoute,
   ApiDocsChatRoute: ApiDocsChatRoute,
+  ApiSearchChatRoute: ApiSearchChatRoute,
   ModuleModuleIdRoute: ModuleModuleIdRoute,
   PathRoleIdRoute: PathRoleIdRoute,
 }

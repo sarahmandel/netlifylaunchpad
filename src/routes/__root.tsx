@@ -16,7 +16,7 @@ export const Route = createRootRoute({
       {
         name: 'description',
         content:
-          'Role-based onboarding that primes admins, developers, and internal builders to use Netlify with platform best practices.',
+          'Ask questions about the Netlify platform and get answers grounded in a role-based onboarding curriculum, its documentation, prompts, and launch checklists.',
       },
     ],
   }),
@@ -64,7 +64,7 @@ function NotFound() {
       <h1 className="text-2xl font-bold mb-2">Page not found</h1>
       <p className="text-muted-foreground mb-4">The page you're looking for doesn't exist.</p>
       <Link to="/" className="px-4 py-2 rounded-lg gradient-teal text-primary-foreground font-semibold">
-        Return to Dashboard
+        Return home
       </Link>
     </div>
   )

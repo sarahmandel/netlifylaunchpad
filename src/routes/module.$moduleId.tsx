@@ -16,11 +16,40 @@ import { useOnboarding } from '@/context/OnboardingContext'
 import { KnowledgeCheck } from '@/components/KnowledgeCheck'
 import { ActivityChecklist } from '@/components/ActivityChecklist'
 import { useDocsAssistant } from '@/components/DocsAssistant'
-import { corePath, getModule, roles, priorityLabel } from '@/lib/curriculum'
+import { corePath, getModule, roles, priorityLabel, type Role } from '@/lib/curriculum'
 
 export const Route = createFileRoute('/module/$moduleId')({
   component: ModulePage,
 })
+
+/**
+ * Where "back" goes depends on whether a role has been chosen. A module can be
+ * opened directly — from the command palette, from a citation on the home page,
+ * or from a shared link — and in that state there is no path to return to yet,
+ * so the link offers to pick one instead of going nowhere.
+ */
+function PathLink({
+  role,
+  className,
+  children,
+}: {
+  role: Role | null
+  className: string
+  children: React.ReactNode
+}) {
+  if (!role) {
+    return (
+      <Link to="/roles" className={className}>
+        {children}
+      </Link>
+    )
+  }
+  return (
+    <Link to="/path/$roleId" params={{ roleId: role }} className={className}>
+      {children}
+    </Link>
+  )
+}
 
 function ModulePage() {
   const { moduleId } = useParams({ from: '/module/$moduleId' })
@@ -34,7 +63,7 @@ function ModulePage() {
       <div className="flex flex-col items-center justify-center min-h-[50vh] animate-fade-in">
         <h1 className="text-2xl font-bold mb-2">Module not found</h1>
         <Link to="/" className="px-4 py-2 rounded-lg gradient-teal text-primary-foreground font-semibold">
-          Back to Dashboard
+          Back to home
         </Link>
       </div>
     )
@@ -58,6 +87,14 @@ function ModulePage() {
 
   return (
     <div className="space-y-8 animate-fade-in">
+      <PathLink
+        role={role}
+        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ArrowLeft className="h-3.5 w-3.5 shrink-0" />
+        {role ? 'Back to your path' : 'Choose your role to get a path'}
+      </PathLink>
+
       <div>
         <div className="flex items-center gap-3 mb-2">
           <div className="flex items-center justify-center h-9 w-9 rounded-lg gradient-teal text-primary-foreground shrink-0">
@@ -188,16 +225,13 @@ function ModulePage() {
           >
             <ArrowLeft className="h-4 w-4" /> {prev.title}
           </button>
-        ) : role ? (
-          <Link
-            to="/path/$roleId"
-            params={{ roleId: role }}
+        ) : (
+          <PathLink
+            role={role}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-sm font-medium hover:bg-secondary transition-colors"
           >
-            <Network className="h-4 w-4" /> {onPath ? 'Path overview' : 'Back to your path'}
-          </Link>
-        ) : (
-          <span />
+            <Network className="h-4 w-4" /> {role ? 'Path overview' : 'Choose your role'}
+          </PathLink>
         )}
         {next ? (
           <button
@@ -206,14 +240,13 @@ function ModulePage() {
           >
             {next.title} <ArrowRight className="h-4 w-4" />
           </button>
-        ) : onPath && role ? (
-          <Link
-            to="/path/$roleId"
-            params={{ roleId: role }}
+        ) : onPath ? (
+          <PathLink
+            role={role}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg gradient-teal text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity"
           >
             <Flag className="h-4 w-4" /> Finish path
-          </Link>
+          </PathLink>
         ) : (
           <span />
         )}

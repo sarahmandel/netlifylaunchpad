@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from 'react'
 import { Bot, X, SendHorizontal, Square, RotateCcw, Sparkles, TriangleAlert } from 'lucide-react'
+import { Markdown } from '@/lib/markdown'
 import { suggestedQuestions } from '@/lib/docs-library'
 
 // Docs assistant.
@@ -35,97 +36,6 @@ const DocsAssistantContext = createContext<DocsAssistantContextValue>({
 
 export function useDocsAssistant() {
   return useContext(DocsAssistantContext)
-}
-
-// ---------------------------------------------------------------- rendering
-
-const INLINE = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)|\*\*([^*]+)\*\*|`([^`]+)`/g
-
-function renderInline(text: string): ReactNode[] {
-  const nodes: ReactNode[] = []
-  let last = 0
-  let key = 0
-  let match: RegExpExecArray | null
-
-  INLINE.lastIndex = 0
-  while ((match = INLINE.exec(text)) !== null) {
-    if (match.index > last) nodes.push(text.slice(last, match.index))
-    if (match[2]) {
-      nodes.push(
-        <a
-          key={key++}
-          href={match[2]}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-primary underline underline-offset-2 hover:text-primary/80 break-words"
-        >
-          {match[1]}
-        </a>,
-      )
-    } else if (match[3]) {
-      nodes.push(
-        <strong key={key++} className="font-semibold text-foreground">
-          {match[3]}
-        </strong>,
-      )
-    } else if (match[4]) {
-      nodes.push(
-        <code key={key++} className="rounded bg-secondary px-1 py-0.5 text-[12px] font-mono">
-          {match[4]}
-        </code>,
-      )
-    }
-    last = INLINE.lastIndex
-  }
-  if (last < text.length) nodes.push(text.slice(last))
-  return nodes
-}
-
-/** Minimal markdown: paragraphs, bullet lists, links, bold, inline code. */
-function Markdown({ text }: { text: string }) {
-  const blocks: ReactNode[] = []
-  const lines = text.split('\n')
-  let bullets: string[] = []
-  let paragraph: string[] = []
-  let key = 0
-
-  const flushBullets = () => {
-    if (bullets.length === 0) return
-    blocks.push(
-      <ul key={key++} className="list-disc pl-4 space-y-1">
-        {bullets.map((b, i) => (
-          <li key={i}>{renderInline(b)}</li>
-        ))}
-      </ul>,
-    )
-    bullets = []
-  }
-
-  const flushParagraph = () => {
-    if (paragraph.length === 0) return
-    blocks.push(<p key={key++}>{renderInline(paragraph.join(' '))}</p>)
-    paragraph = []
-  }
-
-  for (const line of lines) {
-    const trimmed = line.trim()
-    if (!trimmed) {
-      flushParagraph()
-      flushBullets()
-      continue
-    }
-    if (/^[-*]\s+/.test(trimmed)) {
-      flushParagraph()
-      bullets.push(trimmed.replace(/^[-*]\s+/, ''))
-      continue
-    }
-    flushBullets()
-    paragraph.push(trimmed.replace(/^#+\s*/, ''))
-  }
-  flushParagraph()
-  flushBullets()
-
-  return <div className="space-y-2">{blocks}</div>
 }
 
 // -------------------------------------------------------------------- chat

@@ -9,6 +9,7 @@ import {
   BookOpen,
   Network,
   Search,
+  Sparkles,
   Sun,
   Moon,
   type LucideIcon,
@@ -208,6 +209,34 @@ function CommunityQuickLinks() {
   )
 }
 
+/**
+ * The Netlify mark in the top left is the app's home button — it navigates to
+ * the question-and-search front door on every breakpoint.
+ */
+function BrandHome({
+  compact = false,
+  onNavigate,
+}: {
+  /** Wordmark only, no tagline — for the collapsed rail and the mobile header. */
+  compact?: boolean
+  onNavigate?: () => void
+}) {
+  return (
+    <Link
+      to="/"
+      onClick={onNavigate}
+      title="Netlify Platform Onboarding — ask & search"
+      aria-label="Go to the home page to ask and search"
+      className={`flex flex-col items-center gap-2 rounded-md transition-opacity hover:opacity-80 ${
+        compact ? '' : 'px-4 py-3'
+      }`}
+    >
+      <img src="/netlify-logo.svg" alt="Netlify" className={`${compact ? 'h-5' : 'h-7'} max-w-full object-contain`} />
+      {!compact && <p className="text-xs text-muted-foreground">Platform Onboarding</p>}
+    </Link>
+  )
+}
+
 function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const { role } = useOnboarding()
   const recommended = role ? modulesByPriority(role, 'recommended') : []
@@ -221,7 +250,8 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 
       <div className="px-3 space-y-0.5 mt-4" onClick={onNavigate}>
         <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Overview</p>
-        <NavLink to="/" icon={LayoutDashboard} label={role ? 'Change role' : 'Choose your role'} />
+        <NavLink to="/" icon={Sparkles} label="Ask & search" />
+        <NavLink to="/roles" icon={LayoutDashboard} label={role ? 'Change role' : 'Choose your role'} />
         {role && (
           <NavLink to="/path/$roleId" params={{ roleId: role }} icon={Network} label="Your path" />
         )}
@@ -268,12 +298,9 @@ export function AppSidebar({ children }: { children: ReactNode }) {
           } shrink-0 border-r border-sidebar-border bg-sidebar-background transition-all duration-200 hidden md:flex flex-col`}
         >
           <div className="flex-1 overflow-y-auto py-5">
-            {!collapsed && (
-              <div className="px-4 py-3 mb-2 flex flex-col items-center gap-2">
-                <img src="/netlify-logo.svg" alt="Netlify" className="h-7 object-contain" />
-                <p className="text-xs text-muted-foreground">Platform Onboarding</p>
-              </div>
-            )}
+            <div className={collapsed ? 'px-1 pb-3 flex justify-center' : 'mb-2'}>
+              <BrandHome compact={collapsed} />
+            </div>
             <SidebarNav />
             {!collapsed && <CommunityQuickLinks />}
           </div>
@@ -282,7 +309,7 @@ export function AppSidebar({ children }: { children: ReactNode }) {
         <div className="flex-1 flex flex-col min-w-0">
           <header className="h-14 border-b border-border flex items-center px-4 gap-3 bg-card md:hidden">
             <MobileMenu />
-            <img src="/netlify-logo.svg" alt="Netlify" className="h-5 object-contain" />
+            <BrandHome compact />
             <MobileSearchButton />
           </header>
           <main className="flex-1 overflow-y-auto">{children}</main>
@@ -317,9 +344,8 @@ function MobileMenu() {
         <div className="fixed inset-0 z-50 flex">
           <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} />
           <div className="relative w-64 bg-sidebar-background border-r border-sidebar-border py-5 space-y-1 overflow-y-auto">
-            <div className="px-4 mb-2 flex flex-col items-center gap-2">
-              <img src="/netlify-logo.svg" alt="Netlify" className="h-7 object-contain" />
-              <p className="text-xs text-muted-foreground">Platform Onboarding</p>
+            <div className="mb-2">
+              <BrandHome onNavigate={() => setOpen(false)} />
             </div>
             <SidebarNav onNavigate={() => setOpen(false)} />
             <CommunityQuickLinks />

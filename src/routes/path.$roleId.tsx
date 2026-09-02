@@ -54,7 +54,7 @@ function PathOverview() {
       <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 animate-fade-in">
         <h1 className="text-2xl font-bold">Unknown role</h1>
         <p className="text-muted-foreground">Choose a role to see its onboarding path.</p>
-        <Link to="/" className="rounded-lg gradient-teal px-4 py-2 font-semibold text-primary-foreground">
+        <Link to="/roles" className="rounded-lg gradient-teal px-4 py-2 font-semibold text-primary-foreground">
           Choose your role
         </Link>
       </div>
@@ -79,7 +79,10 @@ function PathOverview() {
           <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-widest text-primary">
             <Users className="h-3 w-3 shrink-0" /> {meta.label}
           </span>
-          <Link to="/" className="text-[11px] text-muted-foreground underline underline-offset-2 hover:text-foreground">
+          <Link
+            to="/roles"
+            className="text-[11px] text-muted-foreground underline underline-offset-2 hover:text-foreground"
+          >
             Change role
           </Link>
         </div>
@@ -144,7 +147,8 @@ function PathOverview() {
             <h2 className="text-lg font-semibold">Key concepts for your role</h2>
             <p className="text-sm text-muted-foreground">
               Every concept on your path, in the order to take them — grouped by the platform stage it belongs to.
-              Select a node to see its best practices.
+              Click a concept to open it, or use its <Lightbulb className="mx-0.5 inline h-3 w-3 align-text-bottom" />{' '}
+              button to preview the key concepts and best practices below.
             </p>
           </div>
           <div className="flex items-center gap-3 text-[11px] text-muted-foreground">

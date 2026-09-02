@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { CircleCheck, Clock, Flag, Sparkles } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import { CircleCheck, Clock, Flag, Lightbulb, Sparkles } from 'lucide-react'
 import { corePath, rolePaths, getModule, getRoleMeta, type Role } from '@/lib/curriculum'
 
 // The path diagram is a layered directed acyclic graph. Nodes are real DOM
@@ -7,6 +8,12 @@ import { corePath, rolePaths, getModule, getRoleMeta, type Role } from '@/lib/cu
 // and the arrows are drawn in an SVG layer underneath, positioned from measured
 // node geometry. That means the graph never disagrees with the layout, however
 // the columns wrap.
+//
+// Each node is a link to its module: clicking a concept opens it, which is what
+// clicking a concept is expected to do. Previewing a concept's best practices
+// in place — the panel below the graph — is the secondary action, on its own
+// small control in the corner of the node, so the two never compete for the
+// same click.
 
 const ROOT = '__root'
 const END = '__end'
@@ -189,46 +196,66 @@ export function PathGraph({
                 const selected = selectedId === mod.id
                 const step = steps.findIndex((s) => s.id === mod.id) + 1
                 return (
-                  <button
-                    key={mod.id}
-                    ref={register(mod.id)}
-                    type="button"
-                    onClick={() => onSelect(mod.id)}
-                    aria-pressed={selected}
-                    className={`w-56 max-w-full rounded-xl border bg-card p-3.5 text-left transition-all hover:shadow-md ${
-                      selected
-                        ? 'border-primary ring-2 ring-primary/30'
-                        : done
-                          ? 'border-primary/40 bg-accent/50'
-                          : 'border-border hover:border-primary/40'
-                    }`}
-                  >
-                    <div className="flex items-start gap-2.5">
-                      <div
-                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
-                          done ? 'gradient-teal text-primary-foreground' : 'bg-secondary text-muted-foreground'
+                  // The wrapper carries the ref: it is the box the arrows are
+                  // drawn to, and the link inside fills it exactly.
+                  <div key={mod.id} ref={register(mod.id)} className="relative w-56 max-w-full">
+                    <Link
+                      to="/module/$moduleId"
+                      params={{ moduleId: mod.id }}
+                      aria-label={`Open concept ${step}: ${mod.title}`}
+                      className={`block rounded-xl border bg-card p-3.5 pr-9 text-left transition-all hover:shadow-md ${
+                        selected
+                          ? 'border-primary ring-2 ring-primary/30'
+                          : done
+                            ? 'border-primary/40 bg-accent/50'
+                            : 'border-border hover:border-primary/40'
+                      }`}
+                    >
+                      <div className="flex items-start gap-2.5">
+                        <div
+                          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${
+                            done ? 'gradient-teal text-primary-foreground' : 'bg-secondary text-muted-foreground'
+                          }`}
+                        >
+                          <Icon className="h-4 w-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+                            Concept {step}
+                          </p>
+                          <h3 className="text-sm font-semibold leading-snug">{mod.title}</h3>
+                        </div>
+                      </div>
+                      <p className="mt-2 line-clamp-2 text-[11px] text-muted-foreground">{mod.tagline}</p>
+                      <div className="mt-2 flex items-center gap-1 text-[10px] text-muted-foreground">
+                        <Clock className="h-3 w-3 shrink-0" /> {mod.time}
+                        {mod.addOn && (
+                          <span className="ml-auto rounded border border-amber-500/20 bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wide text-amber-400">
+                            {mod.addOn.label}
+                          </span>
+                        )}
+                      </div>
+                    </Link>
+
+                    {/* Siblings of the link, not children — a button nested in an anchor is invalid. */}
+                    <div className="absolute right-1.5 top-2.5 flex flex-col items-center gap-1.5">
+                      {done && <CircleCheck className="h-4 w-4 text-primary" aria-label="Complete" />}
+                      <button
+                        type="button"
+                        onClick={() => onSelect(mod.id)}
+                        aria-pressed={selected}
+                        title={`Preview best practices for ${mod.title}`}
+                        aria-label={`Preview best practices for ${mod.title}`}
+                        className={`flex h-5 w-5 items-center justify-center rounded transition-colors ${
+                          selected
+                            ? 'bg-primary/15 text-primary'
+                            : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
                         }`}
                       >
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
-                          Concept {step}
-                        </p>
-                        <h3 className="text-sm font-semibold leading-snug">{mod.title}</h3>
-                      </div>
-                      {done && <CircleCheck className="h-4 w-4 shrink-0 text-primary" />}
+                        <Lightbulb className="h-3.5 w-3.5" />
+                      </button>
                     </div>
-                    <p className="mt-2 line-clamp-2 text-[11px] text-muted-foreground">{mod.tagline}</p>
-                    <div className="mt-2 flex items-center gap-1 text-[10px] text-muted-foreground">
-                      <Clock className="h-3 w-3 shrink-0" /> {mod.time}
-                      {mod.addOn && (
-                        <span className="ml-auto rounded border border-amber-500/20 bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wide text-amber-400">
-                          {mod.addOn.label}
-                        </span>
-                      )}
-                    </div>
-                  </button>
+                  </div>
                 )
               })}
             </div>
