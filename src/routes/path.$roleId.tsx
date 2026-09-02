@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { createFileRoute, Link, useNavigate, useParams } from '@tanstack/react-router'
+import { useEffect, useRef, useState } from 'react'
+import { createFileRoute, Link, useLocation, useNavigate, useParams } from '@tanstack/react-router'
 import {
   ArrowRight,
   BookOpen,
@@ -12,6 +12,7 @@ import {
   Users,
 } from 'lucide-react'
 import { useOnboarding } from '@/context/OnboardingContext'
+import { GRAPH_ANCHOR } from '@/lib/anchors'
 import { PathGraph } from '@/components/PathGraph'
 import {
   corePath,
@@ -30,7 +31,9 @@ export const Route = createFileRoute('/path/$roleId')({
 function PathOverview() {
   const { roleId } = useParams({ from: '/path/$roleId' })
   const navigate = useNavigate()
+  const { hash } = useLocation()
   const { role, setRole, isModuleComplete } = useOnboarding()
+  const graphRef = useRef<HTMLElement | null>(null)
 
   const valid = isRole(roleId)
   const pathRole = (valid ? roleId : null) as Role | null
@@ -42,12 +45,26 @@ function PathOverview() {
   }, [pathRole, role, setRole])
 
   const steps = pathRole ? corePath(pathRole) : []
-  const [selectedId, setSelectedId] = useState<string | null>(steps[0]?.id ?? null)
+  // Clicking a graph node opens that concept; this only tracks which concept the
+  // detail panel is previewing, driven by hover/keyboard focus in the graph.
+  const [previewId, setPreviewId] = useState<string | null>(steps[0]?.id ?? null)
 
   useEffect(() => {
-    setSelectedId(steps[0]?.id ?? null)
+    setPreviewId(steps[0]?.id ?? null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roleId])
+
+  // "Back to path" on a concept page links here with #path-graph. Pages scroll
+  // inside the layout's <main>, not the window, so neither native anchor
+  // jumping nor the router's scroll restoration can reach the section — move it
+  // into view directly, on the frame after the graph has laid out.
+  useEffect(() => {
+    if (hash.replace(/^#/, '') !== GRAPH_ANCHOR) return
+    const frame = requestAnimationFrame(() => {
+      graphRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [hash, roleId])
 
   if (!pathRole) {
     return (
@@ -63,7 +80,7 @@ function PathOverview() {
 
   const path = rolePaths[pathRole]
   const meta = getRoleMeta(pathRole)
-  const selected = selectedId ? getModule(selectedId) : null
+  const preview = previewId ? getModule(previewId) : null
   const first = steps[0]
   const resumeAt = steps.find((m) => !isModuleComplete(m.id))
   const done = steps.filter((m) => isModuleComplete(m.id)).length
@@ -138,13 +155,17 @@ function PathOverview() {
         </ul>
       </section>
 
-      <section className="space-y-4 rounded-lg border border-border bg-card p-6">
+      <section
+        ref={graphRef}
+        id={GRAPH_ANCHOR}
+        className="scroll-mt-6 space-y-4 rounded-lg border border-border bg-card p-6"
+      >
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 className="text-lg font-semibold">Key concepts for your role</h2>
             <p className="text-sm text-muted-foreground">
               Every concept on your path, in the order to take them — grouped by the platform stage it belongs to.
-              Select a node to see its best practices.
+              Click a node to open that concept, or hover it to preview its best practices below.
             </p>
           </div>
           <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
@@ -160,8 +181,8 @@ function PathOverview() {
         <div className="pt-2">
           <PathGraph
             role={pathRole}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
+            previewId={previewId}
+            onPreview={setPreviewId}
             isComplete={isModuleComplete}
           />
         </div>
@@ -180,30 +201,30 @@ function PathOverview() {
         )}
       </section>
 
-      {selected && (
+      {preview && (
         <section className="space-y-5 rounded-lg border border-primary/20 bg-accent/40 p-6">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex items-center gap-3">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg gradient-teal text-primary-foreground">
-                <selected.icon className="h-5 w-5" />
+                <preview.icon className="h-5 w-5" />
               </div>
               <div>
                 <p className="text-[11px] font-medium uppercase tracking-widest text-muted-foreground">
-                  {selected.section} · Concept {steps.findIndex((s) => s.id === selected.id) + 1} of {steps.length}
+                  {preview.section} · Concept {steps.findIndex((s) => s.id === preview.id) + 1} of {steps.length}
                 </p>
-                <h2 className="text-lg font-semibold">{selected.title}</h2>
+                <h2 className="text-lg font-semibold">{preview.title}</h2>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={() => open(selected.id)}
+            <Link
+              to="/module/$moduleId"
+              params={{ moduleId: preview.id }}
               className="inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-medium transition-colors hover:bg-primary/20"
             >
               Open concept <ArrowRight className="h-3.5 w-3.5" />
-            </button>
+            </Link>
           </div>
 
-          <p className="text-sm text-muted-foreground">{selected.roleFocus[pathRole]}</p>
+          <p className="text-sm text-muted-foreground">{preview.roleFocus[pathRole]}</p>
 
           <div className="grid gap-5 md:grid-cols-2">
             <div className="space-y-2">
@@ -211,7 +232,7 @@ function PathOverview() {
                 <Lightbulb className="h-4 w-4 shrink-0 text-primary" /> Key concepts
               </h3>
               <ul className="space-y-1.5 text-[13px] text-muted-foreground">
-                {selected.concepts.map((c) => (
+                {preview.concepts.map((c) => (
                   <li key={c} className="flex gap-2">
                     <span className="shrink-0 text-primary">→</span>
                     <span>{c}</span>
@@ -224,7 +245,7 @@ function PathOverview() {
                 <CheckCircle2 className="h-4 w-4 shrink-0 text-primary" /> Best practices
               </h3>
               <ul className="space-y-1.5 text-[13px] text-muted-foreground">
-                {selected.bestPractices.map((b) => (
+                {preview.bestPractices.map((b) => (
                   <li key={b} className="flex gap-2">
                     <span className="shrink-0 text-primary">✓</span>
                     <span>{b}</span>
