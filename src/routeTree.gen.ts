@@ -10,13 +10,20 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as PromptsRouteImport } from './routes/prompts'
+import { Route as DocsRouteImport } from './routes/docs'
 import { Route as ChecklistRouteImport } from './routes/checklist'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ModuleModuleIdRouteImport } from './routes/module.$moduleId'
+import { Route as ApiDocsChatRouteImport } from './routes/api.docs-chat'
 
 const PromptsRoute = PromptsRouteImport.update({
   id: '/prompts',
   path: '/prompts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsRoute = DocsRouteImport.update({
+  id: '/docs',
+  path: '/docs',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ChecklistRoute = ChecklistRouteImport.update({
@@ -34,38 +41,70 @@ const ModuleModuleIdRoute = ModuleModuleIdRouteImport.update({
   path: '/module/$moduleId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiDocsChatRoute = ApiDocsChatRouteImport.update({
+  id: '/api/docs-chat',
+  path: '/api/docs-chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/checklist': typeof ChecklistRoute
+  '/docs': typeof DocsRoute
   '/prompts': typeof PromptsRoute
+  '/api/docs-chat': typeof ApiDocsChatRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/checklist': typeof ChecklistRoute
+  '/docs': typeof DocsRoute
   '/prompts': typeof PromptsRoute
+  '/api/docs-chat': typeof ApiDocsChatRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/checklist': typeof ChecklistRoute
+  '/docs': typeof DocsRoute
   '/prompts': typeof PromptsRoute
+  '/api/docs-chat': typeof ApiDocsChatRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/checklist' | '/prompts' | '/module/$moduleId'
+  fullPaths:
+    | '/'
+    | '/checklist'
+    | '/docs'
+    | '/prompts'
+    | '/api/docs-chat'
+    | '/module/$moduleId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/checklist' | '/prompts' | '/module/$moduleId'
-  id: '__root__' | '/' | '/checklist' | '/prompts' | '/module/$moduleId'
+  to:
+    | '/'
+    | '/checklist'
+    | '/docs'
+    | '/prompts'
+    | '/api/docs-chat'
+    | '/module/$moduleId'
+  id:
+    | '__root__'
+    | '/'
+    | '/checklist'
+    | '/docs'
+    | '/prompts'
+    | '/api/docs-chat'
+    | '/module/$moduleId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ChecklistRoute: typeof ChecklistRoute
+  DocsRoute: typeof DocsRoute
   PromptsRoute: typeof PromptsRoute
+  ApiDocsChatRoute: typeof ApiDocsChatRoute
   ModuleModuleIdRoute: typeof ModuleModuleIdRoute
 }
 
@@ -76,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/prompts'
       fullPath: '/prompts'
       preLoaderRoute: typeof PromptsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs': {
+      id: '/docs'
+      path: '/docs'
+      fullPath: '/docs'
+      preLoaderRoute: typeof DocsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/checklist': {
@@ -99,13 +145,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ModuleModuleIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/docs-chat': {
+      id: '/api/docs-chat'
+      path: '/api/docs-chat'
+      fullPath: '/api/docs-chat'
+      preLoaderRoute: typeof ApiDocsChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ChecklistRoute: ChecklistRoute,
+  DocsRoute: DocsRoute,
   PromptsRoute: PromptsRoute,
+  ApiDocsChatRoute: ApiDocsChatRoute,
   ModuleModuleIdRoute: ModuleModuleIdRoute,
 }
 export const routeTree = rootRouteImport

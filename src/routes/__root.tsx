@@ -2,6 +2,7 @@ import { HeadContent, Outlet, Scripts, createRootRoute, Link } from '@tanstack/r
 import { OnboardingProvider } from '@/context/OnboardingContext'
 import { AppSidebar } from '@/components/AppSidebar'
 import { SearchProvider } from '@/components/SearchCommand'
+import { DocsAssistantProvider } from '@/components/DocsAssistant'
 import { ThemeProvider, themeInitScript } from '@/lib/theme-context'
 
 import '../styles.css'
@@ -44,11 +45,13 @@ function RootComponent() {
     <ThemeProvider>
       <OnboardingProvider>
         <SearchProvider>
-          <AppSidebar>
-            <div className="p-6 md:p-8 max-w-4xl mx-auto">
-              <Outlet />
-            </div>
-          </AppSidebar>
+          <DocsAssistantProvider>
+            <AppSidebar>
+              <div className="p-6 md:p-8 max-w-4xl mx-auto">
+                <Outlet />
+              </div>
+            </AppSidebar>
+          </DocsAssistantProvider>
         </SearchProvider>
       </OnboardingProvider>
     </ThemeProvider>
