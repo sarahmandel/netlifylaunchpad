@@ -148,6 +148,11 @@ function Dashboard() {
                           {st === 'complete' && <CircleCheck className="h-3.5 w-3.5 text-primary" />}
                           {st === 'in-progress' && <LoaderCircle className="h-3.5 w-3.5 text-primary" />}
                           {role && <PriorityBadge role={role} moduleId={m.id} />}
+                          {m.addOn && (
+                            <span className="text-[10px] font-medium uppercase tracking-wide px-1.5 py-0.5 rounded border border-amber-500/20 bg-amber-500/15 text-amber-400">
+                              {m.addOn.label}
+                            </span>
+                          )}
                         </div>
                         <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{m.tagline}</p>
                         <div className="flex items-center justify-between mt-3">

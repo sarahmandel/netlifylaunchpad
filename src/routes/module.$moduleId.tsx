@@ -8,6 +8,7 @@ import {
   ArrowRight,
   ArrowLeft,
   Target,
+  CreditCard,
 } from 'lucide-react'
 import { useOnboarding } from '@/context/OnboardingContext'
 import { KnowledgeCheck } from '@/components/KnowledgeCheck'
@@ -58,6 +59,11 @@ function ModulePage() {
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">{mod.section}</span>
+            {mod.addOn && (
+              <span className="text-[10px] font-medium uppercase tracking-wide px-1.5 py-0.5 rounded border border-amber-500/20 bg-amber-500/15 text-amber-400">
+                {mod.addOn.label}
+              </span>
+            )}
             {complete && (
               <span className="inline-flex items-center gap-1 text-xs text-primary font-medium">
                 <CheckCircle2 className="h-3.5 w-3.5" /> Complete
@@ -68,6 +74,16 @@ function ModulePage() {
         <h1 className="text-2xl font-bold">{mod.title}</h1>
         <p className="text-muted-foreground mt-1">{mod.overview}</p>
       </div>
+
+      {mod.addOn && (
+        <div className="rounded-lg border border-amber-500/25 bg-amber-500/10 p-5">
+          <div className="flex items-center gap-2 mb-1">
+            <CreditCard className="h-4 w-4 text-amber-400 shrink-0" />
+            <h2 className="text-sm font-semibold">{mod.addOn.label} feature — not included on every plan</h2>
+          </div>
+          <p className="text-sm text-muted-foreground">{mod.addOn.note}</p>
+        </div>
+      )}
 
       {roleFocus && (
         <div className="rounded-lg border border-primary/20 bg-accent/50 p-5">
