@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Link } from '@tanstack/react-router'
 import { CircleCheck, Clock, Flag, Sparkles } from 'lucide-react'
 import { corePath, rolePaths, getModule, getRoleMeta, type Role } from '@/lib/curriculum'
 
@@ -7,6 +8,10 @@ import { corePath, rolePaths, getModule, getRoleMeta, type Role } from '@/lib/cu
 // and the arrows are drawn in an SVG layer underneath, positioned from measured
 // node geometry. That means the graph never disagrees with the layout, however
 // the columns wrap.
+//
+// Each concept node is a link to that concept's module page — clicking a node
+// opens the content. Hovering or keyboard-focusing a node instead previews it
+// in the detail panel below the graph, so the preview never costs a click.
 
 const ROOT = '__root'
 const END = '__end'
@@ -24,13 +29,14 @@ function curve(edge: DrawnEdge): string {
 
 export function PathGraph({
   role,
-  selectedId,
-  onSelect,
+  previewId,
+  onPreview,
   isComplete,
 }: {
   role: Role
-  selectedId: string | null
-  onSelect: (moduleId: string) => void
+  /** Concept currently shown in the detail panel below the graph. */
+  previewId: string | null
+  onPreview: (moduleId: string) => void
   isComplete: (moduleId: string) => boolean
 }) {
   const path = rolePaths[role]
@@ -186,17 +192,18 @@ export function PathGraph({
                 if (!mod) return null
                 const Icon = mod.icon
                 const done = isComplete(mod.id)
-                const selected = selectedId === mod.id
+                const previewed = previewId === mod.id
                 const step = steps.findIndex((s) => s.id === mod.id) + 1
                 return (
-                  <button
+                  <Link
                     key={mod.id}
                     ref={register(mod.id)}
-                    type="button"
-                    onClick={() => onSelect(mod.id)}
-                    aria-pressed={selected}
-                    className={`w-56 max-w-full rounded-xl border bg-card p-3.5 text-left transition-all hover:shadow-md ${
-                      selected
+                    to="/module/$moduleId"
+                    params={{ moduleId: mod.id }}
+                    onMouseEnter={() => onPreview(mod.id)}
+                    onFocus={() => onPreview(mod.id)}
+                    className={`block w-56 max-w-full rounded-xl border bg-card p-3.5 text-left transition-all hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 ${
+                      previewed
                         ? 'border-primary ring-2 ring-primary/30'
                         : done
                           ? 'border-primary/40 bg-accent/50'
@@ -228,7 +235,7 @@ export function PathGraph({
                         </span>
                       )}
                     </div>
-                  </button>
+                  </Link>
                 )
               })}
             </div>

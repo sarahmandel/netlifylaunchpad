@@ -13,6 +13,7 @@ import {
   CreditCard,
 } from 'lucide-react'
 import { useOnboarding } from '@/context/OnboardingContext'
+import { GRAPH_ANCHOR } from '@/lib/anchors'
 import { KnowledgeCheck } from '@/components/KnowledgeCheck'
 import { ActivityChecklist } from '@/components/ActivityChecklist'
 import { useDocsAssistant } from '@/components/DocsAssistant'
@@ -56,9 +57,24 @@ function ModulePage() {
   const rolePriority = role ? mod.priority[role] : null
   const roleLabel = role ? roles.find((r) => r.id === role)?.label : null
 
+  const backLinkClass =
+    'inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors'
+
   return (
     <div className="space-y-8 animate-fade-in">
       <div>
+        {/* Returns to the concept graph on the path page, not just its header. */}
+        <div className="mb-4">
+          {role ? (
+            <Link to="/path/$roleId" params={{ roleId: role }} hash={GRAPH_ANCHOR} className={backLinkClass}>
+              <ArrowLeft className="h-3.5 w-3.5 shrink-0" /> Back to path
+            </Link>
+          ) : (
+            <Link to="/" className={backLinkClass}>
+              <ArrowLeft className="h-3.5 w-3.5 shrink-0" /> Choose your role
+            </Link>
+          )}
+        </div>
         <div className="flex items-center gap-3 mb-2">
           <div className="flex items-center justify-center h-9 w-9 rounded-lg gradient-teal text-primary-foreground shrink-0">
             <Icon className="h-5 w-5" />
@@ -192,6 +208,7 @@ function ModulePage() {
           <Link
             to="/path/$roleId"
             params={{ roleId: role }}
+            hash={GRAPH_ANCHOR}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-sm font-medium hover:bg-secondary transition-colors"
           >
             <Network className="h-4 w-4" /> {onPath ? 'Path overview' : 'Back to your path'}
