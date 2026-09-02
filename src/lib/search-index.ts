@@ -11,9 +11,10 @@ import {
   ClipboardCheck,
   MessageSquare,
   BookOpen,
+  Network,
   type LucideIcon,
 } from 'lucide-react'
-import { modules, sectionMeta } from '@/lib/curriculum'
+import { corePath, modules, roles, rolePaths, sectionMeta } from '@/lib/curriculum'
 import { prompts, trackLabels } from '@/lib/prompts'
 import { checklistCategories } from '@/lib/checklists'
 
@@ -58,9 +59,9 @@ function build(): SearchRecord[] {
   }> = [
     {
       id: 'page-dashboard',
-      title: 'Dashboard',
-      subtitle: 'Onboarding overview and your progress',
-      keywords: 'home overview progress roles modules getting started',
+      title: 'Choose your role',
+      subtitle: 'Pick admin, developer, or internal builder to start onboarding',
+      keywords: 'home dashboard role admin developer builder getting started switch change role',
       icon: LayoutDashboard,
       to: '/',
     },
@@ -101,6 +102,26 @@ function build(): SearchRecord[] {
       titleLower: p.title.toLowerCase(),
       haystack: `${p.title} ${p.subtitle} ${p.keywords}`.toLowerCase(),
       target: { to: p.to },
+    })
+  }
+
+  // ---- Role paths ---------------------------------------------------------
+  for (const r of roles) {
+    const path = rolePaths[r.id]
+    const steps = corePath(r.id)
+    records.push({
+      id: `path-${r.id}`,
+      kind: 'page',
+      kindLabel: 'Pages',
+      icon: Network,
+      title: `${r.label} path`,
+      subtitle: path.headline,
+      context: 'Path overview',
+      titleLower: `${r.label} path`.toLowerCase(),
+      haystack: `${r.label} path ${path.headline} ${path.summary} ${r.blurb} ${path.outcomes.join(' ')} ${steps
+        .map((m) => m.title)
+        .join(' ')} role concepts graph overview`.toLowerCase(),
+      target: { to: '/path/$roleId', params: { roleId: r.id } },
     })
   }
 

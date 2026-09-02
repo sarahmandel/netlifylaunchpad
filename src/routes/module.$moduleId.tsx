@@ -7,6 +7,8 @@ import {
   ExternalLink,
   ArrowRight,
   ArrowLeft,
+  Flag,
+  Network,
   Target,
   CreditCard,
 } from 'lucide-react'
@@ -14,7 +16,7 @@ import { useOnboarding } from '@/context/OnboardingContext'
 import { KnowledgeCheck } from '@/components/KnowledgeCheck'
 import { ActivityChecklist } from '@/components/ActivityChecklist'
 import { useDocsAssistant } from '@/components/DocsAssistant'
-import { getModule, modules, roles, priorityLabel } from '@/lib/curriculum'
+import { corePath, getModule, roles, priorityLabel } from '@/lib/curriculum'
 
 export const Route = createFileRoute('/module/$moduleId')({
   component: ModulePage,
@@ -42,9 +44,13 @@ function ModulePage() {
   const state = moduleState[mod.id]
   const complete = isModuleComplete(mod.id)
 
-  const idx = modules.findIndex((m) => m.id === mod.id)
-  const next = modules[idx + 1]
-  const prev = modules[idx - 1]
+  // Navigation follows the selected role's path, not the raw curriculum order,
+  // so "next" is always the next concept in this trainee's guided sequence.
+  const steps = role ? corePath(role) : []
+  const idx = steps.findIndex((m) => m.id === mod.id)
+  const onPath = idx !== -1
+  const next = onPath ? steps[idx + 1] : undefined
+  const prev = onPath ? steps[idx - 1] : undefined
 
   const roleFocus = role ? mod.roleFocus[role] : null
   const rolePriority = role ? mod.priority[role] : null
@@ -58,7 +64,10 @@ function ModulePage() {
             <Icon className="h-5 w-5" />
           </div>
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">{mod.section}</span>
+            <span className="text-xs font-mono text-muted-foreground uppercase tracking-widest">
+              {mod.section}
+              {onPath && ` · Concept ${idx + 1} of ${steps.length}`}
+            </span>
             {mod.addOn && (
               <span className="text-[10px] font-medium uppercase tracking-wide px-1.5 py-0.5 rounded border border-amber-500/20 bg-amber-500/15 text-amber-400">
                 {mod.addOn.label}
@@ -179,6 +188,14 @@ function ModulePage() {
           >
             <ArrowLeft className="h-4 w-4" /> {prev.title}
           </button>
+        ) : role ? (
+          <Link
+            to="/path/$roleId"
+            params={{ roleId: role }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border text-sm font-medium hover:bg-secondary transition-colors"
+          >
+            <Network className="h-4 w-4" /> {onPath ? 'Path overview' : 'Back to your path'}
+          </Link>
         ) : (
           <span />
         )}
@@ -189,6 +206,14 @@ function ModulePage() {
           >
             {next.title} <ArrowRight className="h-4 w-4" />
           </button>
+        ) : onPath && role ? (
+          <Link
+            to="/path/$roleId"
+            params={{ roleId: role }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg gradient-teal text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity"
+          >
+            <Flag className="h-4 w-4" /> Finish path
+          </Link>
         ) : (
           <span />
         )}

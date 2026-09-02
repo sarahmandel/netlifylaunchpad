@@ -880,3 +880,136 @@ export const priorityLabel: Record<Priority, string> = {
   recommended: 'Recommended',
   optional: 'Optional',
 }
+
+// ---------------------------------------------------------------------------
+// Role paths
+// ---------------------------------------------------------------------------
+//
+// Each role gets one guided path made up of exactly the modules marked `core`
+// for that role. The path is expressed as a layered directed acyclic graph:
+// `stages` are the columns of the diagram (left → right, always in Create →
+// Ship → Scale → Secure order) and `edges` are the arrows between concept
+// nodes. Stage membership drives both the diagram and the linear walkthrough
+// order used by the Start button and the module page's next/previous controls,
+// so the graph and the concepts can never drift apart.
+
+export type PathStage = {
+  /** Short column heading, e.g. "Build" — the platform section is on the node. */
+  label: string
+  section: PlatformSection
+  /** Module ids rendered as nodes in this column, top to bottom. */
+  modules: string[]
+}
+
+export type RolePath = {
+  headline: string
+  summary: string
+  /** What the trainee should be able to do once the path is finished. */
+  outcomes: string[]
+  stages: PathStage[]
+  /** DAG arrows between module ids. Every edge must point to a later stage. */
+  edges: [string, string][]
+}
+
+export const rolePaths: Record<Role, RolePath> = {
+  admin: {
+    headline: 'Govern the platform',
+    summary:
+      'Start with the platform model, then work outward through the deploy pipeline, the public surface area you operate, and the controls that keep it locked down.',
+    outcomes: [
+      'Explain the deploy model and roll back a bad production deploy.',
+      'Own domains, DNS, and certificates for the team.',
+      'Configure access, SSO, and audit visibility.',
+      'Set org-wide secret, CSP, and traffic-protection standards.',
+    ],
+    stages: [
+      { label: 'Understand', section: 'Create', modules: ['foundations'] },
+      { label: 'Pipeline', section: 'Ship', modules: ['deploys-previews'] },
+      { label: 'Operate', section: 'Scale', modules: ['domains-network', 'monitoring'] },
+      { label: 'Lock down', section: 'Secure', modules: ['access-governance', 'secure-builds-data'] },
+    ],
+    edges: [
+      ['foundations', 'deploys-previews'],
+      ['deploys-previews', 'domains-network'],
+      ['deploys-previews', 'monitoring'],
+      ['domains-network', 'access-governance'],
+      ['monitoring', 'secure-builds-data'],
+      ['domains-network', 'secure-builds-data'],
+    ],
+  },
+  developer: {
+    headline: 'Build and ship on the platform',
+    summary:
+      'Ground yourself in the deploy model, then pick up the compute and data primitives in parallel before mastering the pipeline that puts them in production safely.',
+    outcomes: [
+      'Choose the right compute primitive for a given use case.',
+      'Pick between Netlify Database and Blobs, and cache deliberately.',
+      'Use deploy contexts, previews, and environment variables correctly.',
+      'Keep secrets, CSP, and rate limits right in every project.',
+    ],
+    stages: [
+      { label: 'Understand', section: 'Create', modules: ['foundations'] },
+      { label: 'Build', section: 'Create', modules: ['functions-edge', 'data-storage'] },
+      { label: 'Extend', section: 'Create', modules: ['netlify-database', 'build-with-ai'] },
+      { label: 'Pipeline', section: 'Ship', modules: ['deploys-previews'] },
+      { label: 'Harden', section: 'Secure', modules: ['secure-builds-data'] },
+    ],
+    edges: [
+      ['foundations', 'functions-edge'],
+      ['foundations', 'data-storage'],
+      ['data-storage', 'netlify-database'],
+      ['functions-edge', 'build-with-ai'],
+      ['netlify-database', 'deploys-previews'],
+      ['build-with-ai', 'deploys-previews'],
+      ['deploys-previews', 'secure-builds-data'],
+    ],
+  },
+  builder: {
+    headline: 'Create and publish without a backend',
+    summary:
+      'Learn the vocabulary first, then use Agent Runners and Forms to build something real, and finish on the deploy workflow that gets it reviewed and published.',
+    outcomes: [
+      'Describe deploys, previews, and the platform primitives in plain terms.',
+      'Use Agent Runners to create and iterate from the dashboard.',
+      'Ship a working form end to end, including notifications.',
+      'Share a Deploy Preview for review before publishing.',
+    ],
+    stages: [
+      { label: 'Understand', section: 'Create', modules: ['foundations'] },
+      { label: 'Make', section: 'Create', modules: ['build-with-ai', 'forms'] },
+      { label: 'Publish', section: 'Ship', modules: ['deploys-previews'] },
+    ],
+    edges: [
+      ['foundations', 'build-with-ai'],
+      ['foundations', 'forms'],
+      ['build-with-ai', 'deploys-previews'],
+      ['forms', 'deploys-previews'],
+    ],
+  },
+}
+
+export function isRole(value: unknown): value is Role {
+  return value === 'admin' || value === 'developer' || value === 'builder'
+}
+
+export function getRoleMeta(role: Role) {
+  return roles.find((r) => r.id === role)!
+}
+
+/** Modules of the role's guided path, in walkthrough order. */
+export function corePath(role: Role): Module[] {
+  return rolePaths[role].stages
+    .flatMap((s) => s.modules)
+    .map((id) => getModule(id))
+    .filter((m): m is Module => !!m)
+}
+
+/** Modules at a given priority for a role, in curriculum order. */
+export function modulesByPriority(role: Role, priority: Priority): Module[] {
+  return modules.filter((m) => m.priority[role] === priority)
+}
+
+/** Position of a module inside the role's path, or -1 when it is off-path. */
+export function pathIndex(role: Role, moduleId: string): number {
+  return corePath(role).findIndex((m) => m.id === moduleId)
+}

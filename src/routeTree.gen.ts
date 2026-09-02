@@ -13,6 +13,7 @@ import { Route as PromptsRouteImport } from './routes/prompts'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as ChecklistRouteImport } from './routes/checklist'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PathRoleIdRouteImport } from './routes/path.$roleId'
 import { Route as ModuleModuleIdRouteImport } from './routes/module.$moduleId'
 import { Route as ApiDocsChatRouteImport } from './routes/api.docs-chat'
 
@@ -36,6 +37,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PathRoleIdRoute = PathRoleIdRouteImport.update({
+  id: '/path/$roleId',
+  path: '/path/$roleId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ModuleModuleIdRoute = ModuleModuleIdRouteImport.update({
   id: '/module/$moduleId',
   path: '/module/$moduleId',
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/prompts': typeof PromptsRoute
   '/api/docs-chat': typeof ApiDocsChatRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
+  '/path/$roleId': typeof PathRoleIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -62,6 +69,7 @@ export interface FileRoutesByTo {
   '/prompts': typeof PromptsRoute
   '/api/docs-chat': typeof ApiDocsChatRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
+  '/path/$roleId': typeof PathRoleIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -71,6 +79,7 @@ export interface FileRoutesById {
   '/prompts': typeof PromptsRoute
   '/api/docs-chat': typeof ApiDocsChatRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
+  '/path/$roleId': typeof PathRoleIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,6 +90,7 @@ export interface FileRouteTypes {
     | '/prompts'
     | '/api/docs-chat'
     | '/module/$moduleId'
+    | '/path/$roleId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -89,6 +99,7 @@ export interface FileRouteTypes {
     | '/prompts'
     | '/api/docs-chat'
     | '/module/$moduleId'
+    | '/path/$roleId'
   id:
     | '__root__'
     | '/'
@@ -97,6 +108,7 @@ export interface FileRouteTypes {
     | '/prompts'
     | '/api/docs-chat'
     | '/module/$moduleId'
+    | '/path/$roleId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -106,6 +118,7 @@ export interface RootRouteChildren {
   PromptsRoute: typeof PromptsRoute
   ApiDocsChatRoute: typeof ApiDocsChatRoute
   ModuleModuleIdRoute: typeof ModuleModuleIdRoute
+  PathRoleIdRoute: typeof PathRoleIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -138,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/path/$roleId': {
+      id: '/path/$roleId'
+      path: '/path/$roleId'
+      fullPath: '/path/$roleId'
+      preLoaderRoute: typeof PathRoleIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/module/$moduleId': {
       id: '/module/$moduleId'
       path: '/module/$moduleId'
@@ -162,6 +182,7 @@ const rootRouteChildren: RootRouteChildren = {
   PromptsRoute: PromptsRoute,
   ApiDocsChatRoute: ApiDocsChatRoute,
   ModuleModuleIdRoute: ModuleModuleIdRoute,
+  PathRoleIdRoute: PathRoleIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

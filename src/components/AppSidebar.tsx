@@ -7,6 +7,7 @@ import {
   ClipboardCheck,
   MessageSquare,
   BookOpen,
+  Network,
   Search,
   Sun,
   Moon,
@@ -15,7 +16,8 @@ import {
 import { useOnboarding } from '@/context/OnboardingContext'
 import { useTheme } from '@/lib/theme-context'
 import { useSearch } from '@/components/SearchCommand'
-import { modules, sectionOrder, sectionMeta } from '@/lib/curriculum'
+import { corePath, getModule, modulesByPriority, sectionOrder, sectionMeta } from '@/lib/curriculum'
+import type { Role } from '@/lib/curriculum'
 
 type SidebarContextType = {
   collapsed: boolean
@@ -42,7 +44,10 @@ function NavLink({
   verified?: boolean
 }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname })
-  const isActive = pathname === (params ? to.replace('$moduleId', params.moduleId) : to)
+  const resolved = params
+    ? Object.entries(params).reduce((acc, [key, value]) => acc.replace(`$${key}`, value), to)
+    : to
+  const isActive = pathname === resolved
   const { collapsed } = useSidebar()
 
   return (
@@ -67,29 +72,56 @@ function NavLink({
   )
 }
 
-function ModuleNav({ onNavigate }: { onNavigate?: () => void }) {
+function SidebarGroup({
+  label,
+  children,
+  onNavigate,
+}: {
+  label: string
+  children: ReactNode
+  onNavigate?: () => void
+}) {
+  return (
+    <div className="px-3 space-y-0.5 mt-6" onClick={onNavigate}>
+      <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">{label}</p>
+      {children}
+    </div>
+  )
+}
+
+function ModuleLink({ moduleId }: { moduleId: string }) {
   const { isModuleComplete } = useOnboarding()
+  const mod = getModule(moduleId)
+  if (!mod) return null
+  return (
+    <NavLink
+      to="/module/$moduleId"
+      params={{ moduleId: mod.id }}
+      icon={mod.icon}
+      label={mod.title}
+      verified={isModuleComplete(mod.id)}
+    />
+  )
+}
+
+/**
+ * Only the selected role's core path is listed under the platform sections —
+ * recommended courses get their own group and optional ones sit in Resources,
+ * so the sidebar always mirrors the path the trainee is on.
+ */
+function PathNav({ role, onNavigate }: { role: Role; onNavigate?: () => void }) {
+  const steps = corePath(role)
   return (
     <>
       {sectionOrder.map((section) => {
-        const sectionModules = modules.filter((m) => m.section === section)
+        const sectionModules = steps.filter((m) => m.section === section)
         if (sectionModules.length === 0) return null
         return (
-          <div key={section} className="px-3 space-y-0.5 mt-6" onClick={onNavigate}>
-            <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">
-              {sectionMeta[section].label}
-            </p>
+          <SidebarGroup key={section} label={sectionMeta[section].label} onNavigate={onNavigate}>
             {sectionModules.map((m) => (
-              <NavLink
-                key={m.id}
-                to="/module/$moduleId"
-                params={{ moduleId: m.id }}
-                icon={m.icon}
-                label={m.title}
-                verified={isModuleComplete(m.id)}
-              />
+              <ModuleLink key={m.id} moduleId={m.id} />
             ))}
-          </div>
+          </SidebarGroup>
         )
       })}
     </>
@@ -177,6 +209,10 @@ function CommunityQuickLinks() {
 }
 
 function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
+  const { role } = useOnboarding()
+  const recommended = role ? modulesByPriority(role, 'recommended') : []
+  const optional = role ? modulesByPriority(role, 'optional') : []
+
   return (
     <>
       <div className="px-3" onClick={onNavigate}>
@@ -185,17 +221,32 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
 
       <div className="px-3 space-y-0.5 mt-4" onClick={onNavigate}>
         <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Overview</p>
-        <NavLink to="/" icon={LayoutDashboard} label="Dashboard" />
+        <NavLink to="/" icon={LayoutDashboard} label={role ? 'Change role' : 'Choose your role'} />
+        {role && (
+          <NavLink to="/path/$roleId" params={{ roleId: role }} icon={Network} label="Your path" />
+        )}
       </div>
 
-      <ModuleNav onNavigate={onNavigate} />
+      {role && <PathNav role={role} onNavigate={onNavigate} />}
 
-      <div className="px-3 space-y-0.5 mt-6" onClick={onNavigate}>
-        <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Resources</p>
-        <NavLink to="/docs" icon={BookOpen} label="Documentation" />
-        <NavLink to="/checklist" icon={ClipboardCheck} label="Checklists" />
-        <NavLink to="/prompts" icon={MessageSquare} label="Prompt Library" />
-      </div>
+      {role && recommended.length > 0 && (
+        <SidebarGroup label="Recommended" onNavigate={onNavigate}>
+          {recommended.map((m) => (
+            <ModuleLink key={m.id} moduleId={m.id} />
+          ))}
+        </SidebarGroup>
+      )}
+
+      {role && (
+        <SidebarGroup label="Resources" onNavigate={onNavigate}>
+          <NavLink to="/docs" icon={BookOpen} label="Documentation" />
+          <NavLink to="/checklist" icon={ClipboardCheck} label="Checklists" />
+          <NavLink to="/prompts" icon={MessageSquare} label="Prompt Library" />
+          {optional.map((m) => (
+            <ModuleLink key={m.id} moduleId={m.id} />
+          ))}
+        </SidebarGroup>
+      )}
 
       <div className="px-3 space-y-0.5 mt-6">
         <p className="px-3 text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-2">Settings</p>
