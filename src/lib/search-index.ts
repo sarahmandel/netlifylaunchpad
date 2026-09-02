@@ -113,6 +113,7 @@ function build(): SearchRecord[] {
       ...m.bestPractices,
       ...m.docs.map((d) => d.label),
       Object.values(m.roleFocus).join(' '),
+      m.addOn ? `${m.addOn.label} add-on ${m.addOn.note}` : '',
     ].join(' ')
     records.push({
       id: `module-${m.id}`,

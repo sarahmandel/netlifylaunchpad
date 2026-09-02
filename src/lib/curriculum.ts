@@ -3,6 +3,7 @@ import {
   Bot,
   FunctionSquare,
   Database,
+  DatabaseZap,
   FormInput,
   GitBranch,
   Globe,
@@ -40,6 +41,11 @@ export type Module = {
   icon: LucideIcon
   time: string
   overview: string
+  /**
+   * Set on modules covering a capability that is not part of every plan, so the
+   * UI can badge it and state the entitlement up front.
+   */
+  addOn?: { label: string; note: string }
   /** Per-role framing — why this module matters for each audience. */
   roleFocus: Record<Role, string>
   /** Relative importance of the module for each role. */
@@ -338,6 +344,113 @@ export const modules: Module[] = [
         ],
         correctIndex: 1,
         explanation: 'The Image CDN handles on-demand transformation and content negotiation automatically.',
+      },
+    ],
+  },
+  {
+    id: 'netlify-database',
+    section: 'Create',
+    title: 'Netlify Database',
+    tagline: 'Managed Postgres with a database branch per deploy preview',
+    icon: DatabaseZap,
+    time: '45–60 min',
+    addOn: {
+      label: 'Add-on',
+      note: 'Netlify Database is an opt-in capability rather than something every team already has: it is available on credit-based plans only (Free, Personal, Pro, Enterprise), is provisioned per project, and is billed from your plan credits by usage — 10 credits per database compute unit and 20 credits per GB of database bandwidth out. Storage size is free until July 1, 2026. Per-plan caps apply to databases per account, branches per database, and backup retention.',
+    },
+    overview:
+      'Netlify Database is a fully managed Postgres built into the platform — Netlify handles provisioning, migrations, and branching for you. Production deploys are the only deploys allowed to reach the main database; every deploy preview and every agent run gets its own database branch, seeded with a copy of production data, so experiments cannot damage live data. This module goes deep on Database itself; see Data, Storage & Caching for how it compares to Blobs and the Image CDN.',
+    roleFocus: {
+      admin:
+        'Team Owner is the only role that can edit production-branch data, copy a read-write production connection string, restore a backup, or delete a database — and usage draws on your plan credits, so entitlement, cost, and compliance sit with you.',
+      developer:
+        'Your primary path. Model schema in repo-tracked migrations, query from functions and edge functions, and work freely on preview branches while the production branch stays read-only for your role.',
+      builder:
+        'You can propose database changes through Agent Runners, but the database dashboard, contents, and connection strings are not available to your role — a Team Owner or Developer publishes the change to production.',
+    },
+    priority: { admin: 'recommended', developer: 'core', builder: 'optional' },
+    concepts: [
+      'Fully managed Postgres built into Netlify — provisioning, migrations, and branching are handled by the platform.',
+      'Database branching: production deploys reach the main database, while each deploy preview gets its own branch seeded with a copy of production data taken when the preview is first created.',
+      'A bad change on a preview branch can be reset and started over without users noticing, which removes the drift and bottleneck problems of a single shared staging database.',
+      'Automatic migrations are tracked in the repository under netlify/database/migrations/ and applied at the right point in the deploy lifecycle, so schema never drifts from the code that is running.',
+      'Readable and writable from Functions, Edge Functions, Builds, and Agent Runners through the @netlify/database package, with Drizzle ORM as an optional type-safe query builder.',
+      'Every agent run gets its own database branch automatically, giving AI agents an isolated environment with no risk to production data.',
+      'netlify database init scaffolds the packages, query style, and a starter migration; netlify dev runs a local Postgres so you can iterate without touching production.',
+      'Access is role-based: editing production data, copying a read-write production connection string, restoring backups, and deleting a database are Team Owner only.',
+    ],
+    bestPractices: [
+      'Keep every schema change in a repo-tracked migration so the schema ships with the code that depends on it.',
+      'Validate schema and data changes on a deploy preview branch first, then publish to production — reset the branch rather than repairing it when something goes wrong.',
+      'Connect the project to Git so each agent run opens a pull request and a Team Owner or Developer has to publish the change to production.',
+      'Tune auto-scale and sleep-on-inactivity deliberately — compute credits accrue for the whole time the database is active, including idle time before it sleeps.',
+      'Do not store cardholder data or Protected Health Information: Netlify Database is not PCI-DSS certified and is not HIPAA-eligible by default.',
+      'Use netlify database init instead of wiring a client by hand, and check the per-plan limits before you design around a database count or branch count.',
+    ],
+    docs: [
+      { label: 'Netlify Database overview', url: `${D}/build/data-and-storage/netlify-database/` },
+      { label: 'Database: Getting started', url: `${D}/build/data-and-storage/netlify-database/getting-started/` },
+      { label: 'Database: Migrations', url: `${D}/build/data-and-storage/netlify-database/migrations/` },
+      { label: 'Database: Access control', url: `${D}/build/data-and-storage/netlify-database/access-control/` },
+      {
+        label: 'Database: Billing, limits, and compliance',
+        url: `${D}/build/data-and-storage/netlify-database/billing-and-usage/`,
+      },
+      { label: 'Database: Local development', url: `${D}/build/data-and-storage/netlify-database/local-development/` },
+      { label: 'Database: Backup and recovery', url: `${D}/build/data-and-storage/netlify-database/backup-and-recovery/` },
+      { label: 'Database: CLI reference', url: `${D}/build/data-and-storage/netlify-database/cli/` },
+    ],
+    checklist: [
+      'Confirm your team is on a credit-based plan and review the database limits that apply to it.',
+      'Run netlify database init in a project and choose a query style (Drizzle ORM or direct SQL).',
+      'Write a migration, deploy it, and confirm it applied during the production deploy.',
+      'Open a deploy preview and confirm it is reading its own database branch rather than production.',
+      'Query the database from a function or edge function.',
+      'Compare the access control matrix against your own team role and note what you cannot do.',
+    ],
+    quiz: [
+      {
+        question: 'Which deploys are allowed to access the main production database?',
+        options: [
+          'Every deploy, including branch deploys and deploy previews',
+          'Only production deploys',
+          'Any deploy that has the connection string',
+          'Only local development',
+        ],
+        correctIndex: 1,
+        explanation:
+          'Production deploys are the only deploys allowed to access the main database, which protects it from the side effects of experimentation.',
+      },
+      {
+        question: 'What database does a deploy preview use?',
+        options: [
+          'The production database, in read-only mode',
+          'No database until you add a connection string',
+          'Its own database branch, seeded with a copy of production data',
+          'A shared staging database used by all previews',
+        ],
+        correctIndex: 2,
+        explanation:
+          'Each deploy preview gets its own branch seeded from production data when the preview is created, and no code changes are needed to connect to it.',
+      },
+      {
+        question: 'Which role is required to edit production-branch data, restore a backup, or delete a database?',
+        options: ['Reviewer', 'Internal Builder', 'Developer', 'Team Owner'],
+        correctIndex: 3,
+        explanation:
+          'Those actions are Team Owner only. Developers have full access to non-production branches but read-only access to the production branch.',
+      },
+      {
+        question: 'How is Netlify Database billed?',
+        options: [
+          'A flat monthly fee on every plan',
+          'From plan credits, based on database compute and bandwidth usage, on credit-based plans only',
+          'Free on all plans with no limits',
+          'Per query, invoiced separately from Netlify',
+        ],
+        correctIndex: 1,
+        explanation:
+          'Netlify Database is available on credit-based plans only and bills usage in credits — 10 credits per compute unit and 20 credits per GB of bandwidth out. Storage size is free until July 1, 2026.',
       },
     ],
   },
