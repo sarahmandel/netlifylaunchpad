@@ -5,6 +5,10 @@
 // library entries, and checklist items — into a single flat list of records.
 // A lightweight token-based matcher scores records against a query so the
 // command palette can surface results from anywhere in the app.
+//
+// The same index doubles as the retrieval layer for the home page assistant:
+// `searchNatural` turns a spoken-language question into keywords and returns the
+// best-matching records, whose `detail` text becomes the model's grounding.
 
 import {
   LayoutDashboard,
@@ -12,6 +16,7 @@ import {
   MessageSquare,
   BookOpen,
   Network,
+  Sparkles,
   type LucideIcon,
 } from 'lucide-react'
 import { corePath, modules, roles, rolePaths, sectionMeta } from '@/lib/curriculum'
@@ -42,6 +47,12 @@ export type SearchRecord = {
   context?: string
   /** All text the matcher searches over, pre-lowercased. */
   haystack: string
+  /**
+   * Original-case body text for this record, used to ground the home page
+   * assistant. The haystack is lowercased for matching, which reads poorly in a
+   * prompt, so retrieval quotes this instead.
+   */
+  detail: string
   target: SearchTarget
 }
 
@@ -58,12 +69,21 @@ function build(): SearchRecord[] {
     to: string
   }> = [
     {
-      id: 'page-dashboard',
+      id: 'page-home',
+      title: 'Ask & search',
+      subtitle: 'Ask a question and get an answer grounded in this onboarding',
+      keywords:
+        'home ask search chat assistant question answer ai find lookup explore start here index elastic fuzzy keyword',
+      icon: Sparkles,
+      to: '/',
+    },
+    {
+      id: 'page-roles',
       title: 'Choose your role',
       subtitle: 'Pick admin, developer, or internal builder to start onboarding',
-      keywords: 'home dashboard role admin developer builder getting started switch change role',
+      keywords: 'dashboard role admin developer builder getting started switch change role onboarding path',
       icon: LayoutDashboard,
-      to: '/',
+      to: '/roles',
     },
     {
       id: 'page-docs',
@@ -101,6 +121,7 @@ function build(): SearchRecord[] {
       context: 'Page',
       titleLower: p.title.toLowerCase(),
       haystack: `${p.title} ${p.subtitle} ${p.keywords}`.toLowerCase(),
+      detail: `${p.title} — ${p.subtitle}.`,
       target: { to: p.to },
     })
   }
@@ -121,6 +142,14 @@ function build(): SearchRecord[] {
       haystack: `${r.label} path ${path.headline} ${path.summary} ${r.blurb} ${path.outcomes.join(' ')} ${steps
         .map((m) => m.title)
         .join(' ')} role concepts graph overview`.toLowerCase(),
+      detail: [
+        `${r.label} onboarding path — ${path.headline}`,
+        path.summary,
+        `Who it is for: ${r.blurb}`,
+        'Outcomes:',
+        ...path.outcomes.map((o) => `- ${o}`),
+        `Core concepts in order: ${steps.map((m) => m.title).join(' → ')}`,
+      ].join('\n'),
       target: { to: '/path/$roleId', params: { roleId: r.id } },
     })
   }
@@ -146,6 +175,19 @@ function build(): SearchRecord[] {
       context: `Module · ${sectionMeta[m.section].label}`,
       titleLower: m.title.toLowerCase(),
       haystack: `${m.title} ${body}`.toLowerCase(),
+      detail: [
+        `${m.title} (${sectionMeta[m.section].label} · ${m.time}) — ${m.tagline}`,
+        m.overview,
+        m.addOn ? `Availability: ${m.addOn.label} — ${m.addOn.note}` : '',
+        'Key concepts:',
+        ...m.concepts.map((c) => `- ${c}`),
+        'Best practices:',
+        ...m.bestPractices.map((b) => `- ${b}`),
+        'Documentation:',
+        ...m.docs.map((d) => `- ${d.label}: ${d.url}`),
+      ]
+        .filter(Boolean)
+        .join('\n'),
       target: { to: '/module/$moduleId', params: { moduleId: m.id } },
     })
   }
@@ -162,6 +204,11 @@ function build(): SearchRecord[] {
       context: `${p.category} · ${trackLabels[p.track]}`,
       titleLower: p.title.toLowerCase(),
       haystack: `${p.title} ${p.description} ${p.prompt} ${p.category} ${trackLabels[p.track]}`.toLowerCase(),
+      detail: [
+        `Prompt "${p.title}" (${p.category} · ${trackLabels[p.track]}) — ${p.description}`,
+        'Prompt text:',
+        p.prompt,
+      ].join('\n'),
       target: { to: '/prompts', hash: `prompt-${slug(p.title)}` },
     })
   }
@@ -180,6 +227,9 @@ function build(): SearchRecord[] {
           context: item.tier && item.tier !== 'all' ? tierLabel(item.tier) : undefined,
           titleLower: item.label.toLowerCase(),
           haystack: `${item.label} ${category.title} ${section.title}`.toLowerCase(),
+          detail: `Checklist item in ${category.title} → ${section.title}: ${item.label}${
+            item.tier && item.tier !== 'all' ? ` (${tierLabel(item.tier)} plans)` : ''
+          }`,
           target: { to: '/checklist', hash: `check-${slug(item.label)}` },
         })
       }
@@ -278,6 +328,93 @@ function kindWeight(kind: SearchKind): number {
 
 function escapeRegExp(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+// --------------------------------------------- natural-language retrieval
+
+/**
+ * Words that carry no signal in a question but would break `searchAll`, which
+ * requires every term to match. "How do deploy previews work?" only finds
+ * anything once "how", "do", and "work" are dropped.
+ */
+const STOPWORDS = new Set([
+  'a', 'about', 'after', 'all', 'also', 'an', 'and', 'any', 'are', 'as', 'at', 'be', 'been', 'best',
+  'between', 'but', 'by', 'can', 'could', 'did', 'do', 'does', 'doing', 'for', 'from', 'get', 'give',
+  'had', 'has', 'have', 'help', 'her', 'here', 'his', 'how', 'i', 'if', 'in', 'into', 'is', 'it',
+  'its', 'just', 'know', 'let', 'like', 'looking', 'make', 'many', 'may', 'me', 'mean', 'means',
+  'might', 'more', 'most', 'much', 'must', 'my', 'need', 'not', 'now', 'of', 'on', 'once', 'one',
+  'only', 'or', 'other', 'our', 'out', 'over', 'please', 'same', 'say', 'see', 'should', 'show',
+  'so', 'some', 'such', 'tell', 'than', 'that', 'the', 'their', 'them', 'then', 'there', 'these',
+  'they', 'this', 'those', 'to', 'up', 'use', 'used', 'using', 'very', 'want', 'was', 'way', 'we',
+  'were', 'what', 'when', 'where', 'which', 'while', 'who', 'why', 'will', 'with', 'work', 'works',
+  'would', 'you', 'your',
+])
+
+/**
+ * Reduce a spoken-language question to the terms worth matching on. Punctuation
+ * is dropped, stopwords are removed, and very short tokens go with them — but
+ * if that leaves nothing (a query made entirely of stopwords, or a two-letter
+ * acronym), the raw tokens are kept so the query still does something.
+ */
+export function keywordsOf(query: string): string[] {
+  const tokens = query
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean)
+  const kept = tokens.filter((t) => t.length > 2 && !STOPWORDS.has(t))
+  return kept.length > 0 ? kept : tokens
+}
+
+/**
+ * Question-shaped search over the same index the command palette uses.
+ *
+ * Tries the strict AND match first, because a record containing every keyword
+ * is the strongest possible signal. When nothing satisfies all of them — the
+ * common case for a long question — the per-term matches are unioned and their
+ * scores summed, so records hitting more of the question still rank highest.
+ */
+export function searchNatural(query: string, limit = 8): SearchResult[] {
+  const terms = keywordsOf(query)
+  if (terms.length === 0) return []
+
+  const strict = searchAll(terms.join(' '), limit)
+  if (strict.length > 0) return strict
+
+  const merged = new Map<string, SearchResult>()
+  for (const term of terms) {
+    for (const hit of searchAll(term, limit * 4)) {
+      const existing = merged.get(hit.id)
+      if (existing) existing.score += hit.score
+      else merged.set(hit.id, { ...hit })
+    }
+  }
+
+  return [...merged.values()]
+    .sort((a, b) => b.score - a.score || a.title.localeCompare(b.title))
+    .slice(0, limit)
+}
+
+/** How many records ground a single answer. Shared so the sources listed in the
+ * UI are exactly the ones the server retrieved. */
+export const RETRIEVAL_LIMIT = 6
+
+/**
+ * The query a question is actually searched with. Follow-ups like "what about
+ * the edge?" carry too little on their own, so the previous question is folded
+ * in. Only the learner's own turns are used — feeding the assistant's words back
+ * in would drift the search away from what was asked.
+ */
+export function retrievalQuery(userQuestions: string[]): string {
+  return userQuestions.slice(-2).reverse().join(' ')
+}
+
+/** Collapse a search target into a plain href, for citations and plain links. */
+export function resolveTarget(target: SearchTarget): string {
+  const path = target.params
+    ? Object.entries(target.params).reduce((acc, [key, value]) => acc.replace(`$${key}`, value), target.to)
+    : target.to
+  return target.hash ? `${path}#${target.hash}` : path
 }
 
 /**

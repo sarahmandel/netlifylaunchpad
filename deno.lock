@@ -11,6 +11,7 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
+        "npm:@anthropic-ai/sdk@~0.117.1",
         "npm:@netlify/blobs@^10.7.4",
         "npm:@netlify/identity@1",
         "npm:@netlify/vite-plugin-tanstack-start@^1.2.14",
