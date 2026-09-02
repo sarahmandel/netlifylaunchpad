@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { BookOpen, ExternalLink, Search, Bot } from 'lucide-react'
+import { BookOpen, ExternalLink, Search, Bot, GraduationCap } from 'lucide-react'
 import { useDocsAssistant } from '@/components/DocsAssistant'
+import { useOnboarding } from '@/context/OnboardingContext'
+import { modulesByPriority } from '@/lib/curriculum'
 import { allDocs, filterDocs } from '@/lib/docs-library'
 
 export const Route = createFileRoute('/docs')({
@@ -11,6 +13,10 @@ export const Route = createFileRoute('/docs')({
 function DocsPage() {
   const [query, setQuery] = useState('')
   const { openAssistant } = useDocsAssistant()
+  const { role } = useOnboarding()
+  // Courses that are optional for the selected role live here rather than on the
+  // role's path, so the path stays strictly the core sequence.
+  const optional = role ? modulesByPriority(role, 'optional') : []
   const groups = useMemo(() => filterDocs(query), [query])
   const matches = groups.reduce((n, g) => n + g.entries.length, 0)
 
@@ -29,6 +35,41 @@ function DocsPage() {
           from them.
         </p>
       </div>
+
+      {optional.length > 0 && (
+        <section className="space-y-4 rounded-lg border border-border bg-card p-6">
+          <div className="flex items-start gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
+              <GraduationCap className="h-4 w-4" />
+            </div>
+            <div>
+              <h2 className="font-semibold">Optional courses</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Not part of your role's path. Take them if you're curious or your work drifts into this territory.
+              </p>
+            </div>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {optional.map((m) => (
+              <Link
+                key={m.id}
+                to="/module/$moduleId"
+                params={{ moduleId: m.id }}
+                className="flex items-start gap-3 rounded-lg border border-border p-4 transition-colors hover:bg-secondary/50"
+              >
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
+                  <m.icon className="h-4 w-4" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-medium">{m.title}</p>
+                  <p className="text-xs text-muted-foreground">{m.tagline}</p>
+                  <p className="mt-1 text-[11px] text-muted-foreground">{m.section} · {m.time}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="rounded-lg border border-border bg-card p-6">
         <div className="flex items-start gap-4 flex-wrap sm:flex-nowrap">

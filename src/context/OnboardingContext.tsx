@@ -6,7 +6,7 @@ import {
   type OnboardingState,
   type UserProgress,
 } from '@/lib/progress-store'
-import { modules } from '@/lib/curriculum'
+import { corePath, modules } from '@/lib/curriculum'
 import type { Role } from '@/lib/curriculum'
 
 export type { Role } from '@/lib/curriculum'
@@ -141,16 +141,21 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     [moduleState],
   )
 
-  const totalCount = useCallback(() => modules.length, [])
+  // Progress is measured against the selected role's guided path — the modules
+  // that role has to complete — rather than the whole curriculum, so an admin
+  // is not marked incomplete for skipping developer-only material.
+  const scope = useCallback(() => (role ? corePath(role) : modules), [role])
+
+  const totalCount = useCallback(() => scope().length, [scope])
   const completedCount = useCallback(
-    () => modules.filter((m) => isModuleComplete(m.id)).length,
-    [isModuleComplete],
+    () => scope().filter((m) => isModuleComplete(m.id)).length,
+    [scope, isModuleComplete],
   )
-  const getProgress = useCallback(
-    () => Math.round((completedCount() / modules.length) * 100),
-    [completedCount],
-  )
-  const allComplete = useCallback(() => completedCount() === modules.length, [completedCount])
+  const getProgress = useCallback(() => {
+    const total = scope().length
+    return total === 0 ? 0 : Math.round((completedCount() / total) * 100)
+  }, [scope, completedCount])
+  const allComplete = useCallback(() => completedCount() === scope().length, [scope, completedCount])
 
   return (
     <OnboardingContext.Provider
