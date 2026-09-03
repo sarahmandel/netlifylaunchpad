@@ -19,7 +19,7 @@ import {
   Sparkles,
   type LucideIcon,
 } from 'lucide-react'
-import { corePath, modules, roles, rolePaths, sectionMeta } from '@/lib/curriculum'
+import { allLessons, corePath, modules, roles, rolePaths, sectionMeta } from '@/lib/curriculum'
 import { prompts, trackLabels } from '@/lib/prompts'
 import { checklistCategories } from '@/lib/checklists'
 
@@ -156,12 +156,14 @@ function build(): SearchRecord[] {
 
   // ---- Curriculum modules -------------------------------------------------
   for (const m of modules) {
+    const subsections = m.lessons ?? []
     const body = [
       m.tagline,
       m.overview,
       ...m.concepts,
       ...m.bestPractices,
       ...m.docs.map((d) => d.label),
+      ...subsections.map((l) => `${l.title} ${l.summary}`),
       Object.values(m.roleFocus).join(' '),
       m.addOn ? `${m.addOn.label} add-on ${m.addOn.note}` : '',
     ].join(' ')
@@ -185,10 +187,51 @@ function build(): SearchRecord[] {
         ...m.bestPractices.map((b) => `- ${b}`),
         'Documentation:',
         ...m.docs.map((d) => `- ${d.label}: ${d.url}`),
+        subsections.length > 0 ? `Subsections: ${subsections.map((l) => l.title).join(', ')}` : '',
       ]
         .filter(Boolean)
         .join('\n'),
       target: { to: '/module/$moduleId', params: { moduleId: m.id } },
+    })
+  }
+
+  // ---- Module subsections -------------------------------------------------
+  // Indexed as their own destinations so a search for "credits" or "prerender"
+  // lands on the subsection that covers it, not just its parent module.
+  for (const { module: m, lesson } of allLessons()) {
+    const body = [
+      lesson.tagline,
+      lesson.summary,
+      lesson.overview,
+      ...lesson.concepts,
+      ...lesson.bestPractices,
+      ...lesson.docs.map((d) => d.label),
+      lesson.addOn ? `${lesson.addOn.label} ${lesson.addOn.note}` : '',
+    ].join(' ')
+    records.push({
+      id: `lesson-${m.id}-${lesson.id}`,
+      kind: 'module',
+      kindLabel: 'Modules',
+      icon: lesson.icon,
+      title: lesson.title,
+      subtitle: lesson.summary,
+      context: `${m.title} · Subsection`,
+      titleLower: lesson.title.toLowerCase(),
+      haystack: `${lesson.title} ${m.title} ${body}`.toLowerCase(),
+      detail: [
+        `${lesson.title} — subsection of the ${m.title} module (${lesson.time}) — ${lesson.tagline}`,
+        lesson.overview,
+        lesson.addOn ? `Availability: ${lesson.addOn.label} — ${lesson.addOn.note}` : '',
+        'Key concepts:',
+        ...lesson.concepts.map((c) => `- ${c}`),
+        'Best practices:',
+        ...lesson.bestPractices.map((b) => `- ${b}`),
+        'Documentation:',
+        ...lesson.docs.map((d) => `- ${d.label}: ${d.url}`),
+      ]
+        .filter(Boolean)
+        .join('\n'),
+      target: { to: '/module/$moduleId/$lessonId', params: { moduleId: m.id, lessonId: lesson.id } },
     })
   }
 

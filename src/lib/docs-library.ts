@@ -28,10 +28,21 @@ function buildLibrary(): DocGroup[] {
   const byUrl = new Map<string, DocEntry>()
 
   for (const m of modules) {
-    for (const d of m.docs) {
+    // A module's own docs plus everything its subsections and further-reading
+    // pointers reference, so the library never hides a page behind a subsection.
+    const docs = [
+      ...m.docs,
+      ...(m.lessons ?? []).flatMap((l) => l.docs),
+      ...(m.furtherTopics ?? []).map((t) => ({ label: t.title, url: t.url })),
+    ]
+    for (const d of docs) {
       const existing = byUrl.get(d.url)
       if (existing) {
-        existing.modules.push({ id: m.id, title: m.title })
+        // Subsections repeat their parent module's pages, so credit each module
+        // at most once per page.
+        if (!existing.modules.some((entry) => entry.id === m.id)) {
+          existing.modules.push({ id: m.id, title: m.title })
+        }
         continue
       }
       byUrl.set(d.url, {
@@ -77,10 +88,28 @@ function moduleDigest(m: Module): string {
     ...m.concepts.map((c) => `- ${c}`),
     'Best practices:',
     ...m.bestPractices.map((b) => `- ${b}`),
-    'Hands-on activities:',
-    ...m.checklist.map((c) => `- ${c}`),
+    ...(m.checklist && m.checklist.length > 0
+      ? ['Hands-on activities:', ...m.checklist.map((c) => `- ${c}`)]
+      : []),
     'Documentation:',
     ...m.docs.map((d) => `- ${d.label}: ${d.url}`),
+    // Subsections carry most of the material for modules that have them, so the
+    // assistant needs them in its grounding, not just the parent summary.
+    ...(m.lessons ?? []).flatMap((lesson) => [
+      '',
+      `### ${lesson.title} (subsection id: ${m.id}/${lesson.id} · ${lesson.time})`,
+      lesson.overview,
+      ...(lesson.addOn ? [`Availability: ${lesson.addOn.label} — ${lesson.addOn.note}`] : []),
+      'Key concepts:',
+      ...lesson.concepts.map((c) => `- ${c}`),
+      'Best practices:',
+      ...lesson.bestPractices.map((b) => `- ${b}`),
+      'Hands-on activities:',
+      ...lesson.checklist.map((c) => `- ${c}`),
+      'Documentation:',
+      ...lesson.docs.map((d) => `- ${d.label}: ${d.url}`),
+    ]),
+    ...(m.furtherTopics ?? []).flatMap((t) => ['', `### Also worth knowing: ${t.title}`, t.note, `Docs: ${t.url}`]),
   ].join('\n')
 }
 

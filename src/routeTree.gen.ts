@@ -18,6 +18,7 @@ import { Route as PathRoleIdRouteImport } from './routes/path.$roleId'
 import { Route as ModuleModuleIdRouteImport } from './routes/module.$moduleId'
 import { Route as ApiSearchChatRouteImport } from './routes/api.search-chat'
 import { Route as ApiDocsChatRouteImport } from './routes/api.docs-chat'
+import { Route as ModuleModuleIdLessonIdRouteImport } from './routes/module.$moduleId_.$lessonId'
 
 const RolesRoute = RolesRouteImport.update({
   id: '/roles',
@@ -64,6 +65,11 @@ const ApiDocsChatRoute = ApiDocsChatRouteImport.update({
   path: '/api/docs-chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ModuleModuleIdLessonIdRoute = ModuleModuleIdLessonIdRouteImport.update({
+  id: '/module/$moduleId_/$lessonId',
+  path: '/module/$moduleId/$lessonId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/api/search-chat': typeof ApiSearchChatRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
   '/path/$roleId': typeof PathRoleIdRoute
+  '/module/$moduleId/$lessonId': typeof ModuleModuleIdLessonIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByTo {
   '/api/search-chat': typeof ApiSearchChatRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
   '/path/$roleId': typeof PathRoleIdRoute
+  '/module/$moduleId/$lessonId': typeof ModuleModuleIdLessonIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -98,6 +106,7 @@ export interface FileRoutesById {
   '/api/search-chat': typeof ApiSearchChatRoute
   '/module/$moduleId': typeof ModuleModuleIdRoute
   '/path/$roleId': typeof PathRoleIdRoute
+  '/module/$moduleId_/$lessonId': typeof ModuleModuleIdLessonIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
     | '/api/search-chat'
     | '/module/$moduleId'
     | '/path/$roleId'
+    | '/module/$moduleId/$lessonId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
     | '/api/search-chat'
     | '/module/$moduleId'
     | '/path/$roleId'
+    | '/module/$moduleId/$lessonId'
   id:
     | '__root__'
     | '/'
@@ -133,6 +144,7 @@ export interface FileRouteTypes {
     | '/api/search-chat'
     | '/module/$moduleId'
     | '/path/$roleId'
+    | '/module/$moduleId_/$lessonId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -145,6 +157,7 @@ export interface RootRouteChildren {
   ApiSearchChatRoute: typeof ApiSearchChatRoute
   ModuleModuleIdRoute: typeof ModuleModuleIdRoute
   PathRoleIdRoute: typeof PathRoleIdRoute
+  ModuleModuleIdLessonIdRoute: typeof ModuleModuleIdLessonIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -212,6 +225,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiDocsChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/module/$moduleId_/$lessonId': {
+      id: '/module/$moduleId_/$lessonId'
+      path: '/module/$moduleId/$lessonId'
+      fullPath: '/module/$moduleId/$lessonId'
+      preLoaderRoute: typeof ModuleModuleIdLessonIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -225,6 +245,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSearchChatRoute: ApiSearchChatRoute,
   ModuleModuleIdRoute: ModuleModuleIdRoute,
   PathRoleIdRoute: PathRoleIdRoute,
+  ModuleModuleIdLessonIdRoute: ModuleModuleIdLessonIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

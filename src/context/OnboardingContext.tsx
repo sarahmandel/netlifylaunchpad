@@ -6,7 +6,7 @@ import {
   type OnboardingState,
   type UserProgress,
 } from '@/lib/progress-store'
-import { corePath, modules } from '@/lib/curriculum'
+import { corePath, getModule, lessonKey, modules } from '@/lib/curriculum'
 import type { Role } from '@/lib/curriculum'
 
 export type { Role } from '@/lib/curriculum'
@@ -18,6 +18,9 @@ type OnboardingContextType = {
   passQuiz: (moduleId: string) => void
   completeChecklist: (moduleId: string) => void
   isModuleComplete: (moduleId: string) => boolean
+  isLessonComplete: (moduleId: string, lessonId: string) => boolean
+  /** How many of a module's lessons are finished, for its landing page. */
+  lessonProgress: (moduleId: string) => { done: number; total: number }
   completedCount: () => number
   totalCount: () => number
   getProgress: () => number
@@ -133,12 +136,41 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     [role, persist],
   )
 
-  const isModuleComplete = useCallback(
-    (moduleId: string) => {
-      const s = moduleState[moduleId]
+  const isComplete = useCallback(
+    (key: string) => {
+      const s = moduleState[key]
       return !!s && s.quizPassed && s.checklistCompleted
     },
     [moduleState],
+  )
+
+  const isLessonComplete = useCallback(
+    (moduleId: string, lessonId: string) => isComplete(lessonKey(moduleId, lessonId)),
+    [isComplete],
+  )
+
+  // A module made of subsections has no knowledge check of its own — it is
+  // finished exactly when every one of its lessons is.
+  const isModuleComplete = useCallback(
+    (moduleId: string) => {
+      const lessons = getModule(moduleId)?.lessons
+      if (lessons && lessons.length > 0) {
+        return lessons.every((l) => isComplete(lessonKey(moduleId, l.id)))
+      }
+      return isComplete(moduleId)
+    },
+    [isComplete],
+  )
+
+  const lessonProgress = useCallback(
+    (moduleId: string) => {
+      const lessons = getModule(moduleId)?.lessons ?? []
+      return {
+        done: lessons.filter((l) => isComplete(lessonKey(moduleId, l.id))).length,
+        total: lessons.length,
+      }
+    },
+    [isComplete],
   )
 
   // Progress is measured against the selected role's guided path — the modules
@@ -166,6 +198,8 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
         passQuiz,
         completeChecklist,
         isModuleComplete,
+        isLessonComplete,
+        lessonProgress,
         completedCount,
         totalCount,
         getProgress,

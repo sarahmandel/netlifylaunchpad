@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { getStore } from '@netlify/blobs'
 import type { Role } from '@/lib/curriculum'
-import { modules } from '@/lib/curriculum'
+import { allLessonKeys, modules } from '@/lib/curriculum'
 
 // Progress is stored in Netlify Blobs (a platform primitive) keyed by an
 // anonymous, per-device client id. The app uses Netlify's platform-level access
@@ -22,10 +22,16 @@ export type UserProgress = {
   modules: OnboardingState
 }
 
+// `mergeProgress` only keeps keys that exist in the defaults, so every progress
+// key the app can write — module ids and lesson keys alike — has to be seeded
+// here or it would be silently dropped on the next save.
 export function getDefaultModules(): OnboardingState {
   const state: OnboardingState = {}
   for (const m of modules) {
     state[m.id] = { quizPassed: false, checklistCompleted: false }
+  }
+  for (const key of allLessonKeys()) {
+    state[key] = { quizPassed: false, checklistCompleted: false }
   }
   return state
 }
