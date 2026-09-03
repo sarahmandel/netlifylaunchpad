@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import Anthropic from '@anthropic-ai/sdk'
 import { docsKnowledgeBase } from '@/lib/docs-library'
-import { getModule } from '@/lib/curriculum'
+import { getFocusTitle } from '@/lib/curriculum'
 
 // Streaming chat endpoint for the docs assistant.
 //
@@ -77,10 +77,11 @@ export const Route = createFileRoute('/api/docs-chat')({
           )
         }
 
-        // A module page can scope the conversation to the docs it lists.
-        const focus = payload.moduleId ? getModule(payload.moduleId) : undefined
+        // A module or subsection page can scope the conversation to the docs it
+        // lists. `moduleId` carries a module id or a `moduleId/lessonId` key.
+        const focus = payload.moduleId ? getFocusTitle(payload.moduleId) : undefined
         const system = focus
-          ? `${SYSTEM_PROMPT}\n\nThe learner is currently reading the "${focus.title}" module. Prefer its documentation unless the question points elsewhere.`
+          ? `${SYSTEM_PROMPT}\n\nThe learner is currently reading "${focus}" in this onboarding. Prefer its documentation unless the question points elsewhere.`
           : SYSTEM_PROMPT
 
         try {

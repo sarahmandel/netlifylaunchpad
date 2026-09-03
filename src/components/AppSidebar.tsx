@@ -90,18 +90,41 @@ function SidebarGroup({
   )
 }
 
+/**
+ * A module with subsections lists them underneath itself, so the sidebar shows
+ * where inside a large section the trainee is. Collapsed, only the module rail
+ * is shown — nested labels have nowhere to go.
+ */
 function ModuleLink({ moduleId }: { moduleId: string }) {
-  const { isModuleComplete } = useOnboarding()
+  const { isModuleComplete, isLessonComplete } = useOnboarding()
+  const { collapsed } = useSidebar()
   const mod = getModule(moduleId)
   if (!mod) return null
+  const lessons = mod.lessons ?? []
   return (
-    <NavLink
-      to="/module/$moduleId"
-      params={{ moduleId: mod.id }}
-      icon={mod.icon}
-      label={mod.title}
-      verified={isModuleComplete(mod.id)}
-    />
+    <>
+      <NavLink
+        to="/module/$moduleId"
+        params={{ moduleId: mod.id }}
+        icon={mod.icon}
+        label={mod.title}
+        verified={isModuleComplete(mod.id)}
+      />
+      {!collapsed && lessons.length > 0 && (
+        <div className="ml-4 border-l border-sidebar-border pl-1.5 space-y-0.5">
+          {lessons.map((lesson) => (
+            <NavLink
+              key={lesson.id}
+              to="/module/$moduleId/$lessonId"
+              params={{ moduleId: mod.id, lessonId: lesson.id }}
+              icon={lesson.icon}
+              label={lesson.title}
+              verified={isLessonComplete(mod.id, lesson.id)}
+            />
+          ))}
+        </div>
+      )}
+    </>
   )
 }
 
