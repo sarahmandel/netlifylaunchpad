@@ -20,8 +20,10 @@ import {
 import { useOnboarding } from '@/context/OnboardingContext'
 import { KnowledgeCheck } from '@/components/KnowledgeCheck'
 import { ActivityChecklist } from '@/components/ActivityChecklist'
+import { StackGraph } from '@/components/StackGraph'
 import { useDocsAssistant } from '@/components/DocsAssistant'
 import { corePath, getModule, groupedLessons, roles, priorityLabel, type Role } from '@/lib/curriculum'
+import { getStackGraph } from '@/lib/ai-stack'
 
 export const Route = createFileRoute('/module/$moduleId')({
   component: ModulePage,
@@ -97,6 +99,10 @@ function ModulePage() {
   const lessons = mod.lessons ?? []
   const hasLessons = lessons.length > 0
   const groups = groupedLessons(mod)
+  // Some sections are better read as a diagram than a list: when a module
+  // declares a stack graph, the graph replaces the grouped lesson cards and
+  // becomes the way into each subsection.
+  const hasStackGraph = Boolean(getStackGraph(mod.id))
   const lessonsDone = lessonProgress(mod.id)
   const nextLesson = lessons.find((l) => !isLessonComplete(mod.id, l.id)) ?? lessons[0]
   let lessonNumber = 0
@@ -177,7 +183,9 @@ function ModulePage() {
                   <span className="text-foreground font-medium">
                     {lessonsDone.done} of {lessonsDone.total} complete
                   </span>
-                  . Work through them in any order.
+                  . {hasStackGraph
+                    ? 'The diagram below places each one where it sits in the stack — start anywhere.'
+                    : 'Work through them in any order.'}
                 </p>
               </div>
               {nextLesson && (
@@ -197,65 +205,69 @@ function ModulePage() {
             </div>
           </div>
 
-          {groups.map((group, gi) => (
-            <div key={group.label ?? `group-${gi}`} className="space-y-3">
-              {group.label && (
-                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest pt-2">
-                  {group.label}
-                </p>
-              )}
-              {group.lessons.map((lesson) => {
-                const LessonIcon = lesson.icon
-                const done = isLessonComplete(mod.id, lesson.id)
-                lessonNumber += 1
-                return (
-                  <Link
-                    key={lesson.id}
-                    to="/module/$moduleId/$lessonId"
-                    params={{ moduleId: mod.id, lessonId: lesson.id }}
-                    className="block rounded-lg border border-border bg-card p-5 transition-colors hover:border-primary/40 hover:bg-accent/40 group"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary shrink-0">
-                        <LessonIcon className="h-4 w-4" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-[11px] font-mono text-muted-foreground">
-                            {lessonNumber} / {lessons.length}
-                          </span>
-                          <h3 className="text-sm font-semibold truncate">{lesson.title}</h3>
-                          {lesson.addOn && (
-                            <span className="text-[10px] font-medium uppercase tracking-wide px-1.5 py-0.5 rounded border border-amber-500/20 bg-amber-500/15 text-amber-400">
-                              {lesson.addOn.label}
-                            </span>
-                          )}
-                          {done ? (
-                            <span className="inline-flex items-center gap-1 text-[11px] text-primary font-medium ml-auto shrink-0">
-                              <CheckCircle2 className="h-3.5 w-3.5" /> Complete
-                            </span>
-                          ) : (
-                            <Circle className="h-3.5 w-3.5 text-muted-foreground/50 ml-auto shrink-0" />
-                          )}
+          {hasStackGraph ? (
+            <StackGraph mod={mod} isLessonComplete={isLessonComplete} />
+          ) : (
+            groups.map((group, gi) => (
+              <div key={group.label ?? `group-${gi}`} className="space-y-3">
+                {group.label && (
+                  <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest pt-2">
+                    {group.label}
+                  </p>
+                )}
+                {group.lessons.map((lesson) => {
+                  const LessonIcon = lesson.icon
+                  const done = isLessonComplete(mod.id, lesson.id)
+                  lessonNumber += 1
+                  return (
+                    <Link
+                      key={lesson.id}
+                      to="/module/$moduleId/$lessonId"
+                      params={{ moduleId: mod.id, lessonId: lesson.id }}
+                      className="block rounded-lg border border-border bg-card p-5 transition-colors hover:border-primary/40 hover:bg-accent/40 group"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="flex items-center justify-center h-8 w-8 rounded-lg bg-primary/10 text-primary shrink-0">
+                          <LessonIcon className="h-4 w-4" />
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1">{lesson.summary}</p>
-                        <div className="flex items-center gap-3 mt-2 text-[11px] text-muted-foreground">
-                          <span className="inline-flex items-center gap-1">
-                            <Clock className="h-3 w-3 shrink-0" /> {lesson.time}
-                          </span>
-                          <span>{lesson.concepts.length} concepts</span>
-                          <span>{lesson.docs.length} docs</span>
-                          <span className="ml-auto inline-flex items-center gap-1 text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                            Open <ArrowRight className="h-3 w-3" />
-                          </span>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-[11px] font-mono text-muted-foreground">
+                              {lessonNumber} / {lessons.length}
+                            </span>
+                            <h3 className="text-sm font-semibold truncate">{lesson.title}</h3>
+                            {lesson.addOn && (
+                              <span className="text-[10px] font-medium uppercase tracking-wide px-1.5 py-0.5 rounded border border-amber-500/20 bg-amber-500/15 text-amber-400">
+                                {lesson.addOn.label}
+                              </span>
+                            )}
+                            {done ? (
+                              <span className="inline-flex items-center gap-1 text-[11px] text-primary font-medium ml-auto shrink-0">
+                                <CheckCircle2 className="h-3.5 w-3.5" /> Complete
+                              </span>
+                            ) : (
+                              <Circle className="h-3.5 w-3.5 text-muted-foreground/50 ml-auto shrink-0" />
+                            )}
+                          </div>
+                          <p className="text-sm text-muted-foreground mt-1">{lesson.summary}</p>
+                          <div className="flex items-center gap-3 mt-2 text-[11px] text-muted-foreground">
+                            <span className="inline-flex items-center gap-1">
+                              <Clock className="h-3 w-3 shrink-0" /> {lesson.time}
+                            </span>
+                            <span>{lesson.concepts.length} concepts</span>
+                            <span>{lesson.docs.length} docs</span>
+                            <span className="ml-auto inline-flex items-center gap-1 text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+                              Open <ArrowRight className="h-3 w-3" />
+                            </span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
-          ))}
+                    </Link>
+                  )
+                })}
+              </div>
+            ))
+          )}
         </section>
       )}
 
