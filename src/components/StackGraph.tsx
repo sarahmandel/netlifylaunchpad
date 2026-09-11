@@ -12,8 +12,10 @@ import { getStackGraph, type StackEdge, type StackNode } from '@/lib/ai-stack'
 //
 // Two kinds of edge are drawn. Flow edges run left to right between adjacent
 // stages, from the right edge of one node to the left edge of the next. Control
-// edges drop straight down from a metered node into the governance band, which
-// is why governance is not a column: nothing in a request passes through it.
+// edges drop straight down into the governance band, which is why governance is
+// not a column: nothing in a request passes through it. Only the AI-metered
+// nodes drop one — plenty of other nodes draw down plan credits and say so with
+// a gauge badge, but the team's AI settings do not cap what they spend.
 
 const CONTROL = '__control'
 
@@ -34,6 +36,16 @@ function controlCurve(edge: DrawnEdge): string {
   return `M ${edge.from.x} ${edge.from.y} C ${edge.from.x} ${edge.from.y + bend} ${edge.to.x} ${
     edge.to.y - bend
   } ${edge.to.x} ${edge.to.y}`
+}
+
+/**
+ * What the gauge badge announces: that the node spends plan credits, which
+ * meter bills it, and what specifically gets counted.
+ */
+function meterLabel(node: StackNode): string {
+  const meter = node.metered === 'ai-inference' ? 'the AI inference meter' : 'plan usage meters'
+  const detail = node.meterNote ? ` — ${node.meterNote}` : ''
+  return `Draws plan credits through ${meter}${detail}`
 }
 
 function LegendChip({ swatch, children }: { swatch: string; children: React.ReactNode }) {
@@ -89,7 +101,11 @@ function StackNodeCard({
           <CircleCheck className="h-3.5 w-3.5 shrink-0 text-primary" aria-label="Complete" />
         )}
         {node.metered && !done && (
-          <Gauge className="h-3.5 w-3.5 shrink-0 text-amber-400" aria-label="Draws plan credits" />
+          // The badge is small and the detail is long, so the meter that
+          // actually gets billed lives in the tooltip rather than the card.
+          <span className="shrink-0 leading-none" title={meterLabel(node)}>
+            <Gauge className="h-3.5 w-3.5 text-amber-400" aria-label={meterLabel(node)} />
+          </span>
         )}
       </div>
       <p className="mt-1.5 text-[10px] leading-snug text-muted-foreground">{node.role}</p>
@@ -159,12 +175,14 @@ export function StackGraph({
   }, [])
 
   // Flow edges come from the graph; control edges are derived, so a node only
-  // has to declare that it is metered to be wired into the governance band.
+  // has to declare that it bills AI inference to be wired into the governance
+  // band. Nodes on the other meters get the badge but no edge — the AI credit
+  // limit does not cap them.
   const controlEdges = useMemo<StackEdge[]>(() => {
     if (!graph) return []
     return graph.stages
       .flatMap((stage) => stage.nodes)
-      .filter((node) => node.metered)
+      .filter((node) => node.metered === 'ai-inference')
       .map((node) => [node.id, CONTROL] as StackEdge)
   }, [graph])
 
@@ -253,15 +271,16 @@ export function StackGraph({
         <LegendChip swatch="border border-border bg-card">Platform primitive</LegendChip>
         <LegendChip swatch="border border-dashed border-border">Outside Netlify</LegendChip>
         <span className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
-          <Gauge className="h-3 w-3 shrink-0 text-amber-400" /> Draws plan credits
+          <Gauge className="h-3 w-3 shrink-0 text-amber-400" /> Draws plan credits — hover for the meter
         </span>
       </div>
 
       <p className="sr-only">
         The diagram runs in {graph.stages.length} stages:{' '}
         {graph.stages.map((stage) => stage.label).join(', then ')}. A separate control plane —{' '}
-        {graph.control.label} — governs the metered nodes rather than sitting in the request path. Each box is a
-        link, listed here stage by stage.
+        {graph.control.label} — governs the AI-metered nodes rather than sitting in the request path. Boxes marked
+        with a gauge draw down plan credits, though only the AI inference ones answer to that control plane. Each
+        box is a link, listed here stage by stage.
       </p>
 
       <div className="mt-5 overflow-x-auto pb-3">
