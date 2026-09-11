@@ -35,7 +35,13 @@ import {
 // Governance is deliberately not a stage. Enablement, privacy, and credits are
 // not something a request passes through — they are a control plane sitting
 // under the whole diagram, so the three "Govern and pay for AI" subsections are
-// drawn as a band and the metered nodes drop a dashed edge into it.
+// drawn as a band and the AI-metered nodes drop a dashed edge into it.
+//
+// Metering is marked on the nodes themselves, because "what does this cost me?"
+// is the other question people arrive with. Every metered node draws down the
+// same pool of plan credits, but they do not all answer to the same control
+// plane: only the AI inference meter is capped by the team's AI settings, so
+// only those nodes are wired into the band.
 
 export type StackNodeKind =
   /** A subsection of the module — the node is the lesson. */
@@ -44,6 +50,9 @@ export type StackNodeKind =
   | 'platform'
   /** Something outside Netlify that the stack talks to. */
   | 'external'
+
+/** The usage meter a node bills to. */
+export type StackMeter = 'ai-inference' | 'plan-usage'
 
 export type StackNode = {
   id: string
@@ -56,8 +65,14 @@ export type StackNode = {
   lessonId?: string
   /** Set on platform nodes that have a module of their own to open. */
   moduleId?: string
-  /** Draws on plan credits, so the control plane governs it. */
-  metered?: boolean
+  /**
+   * Which usage meter the node bills. Both kinds draw down plan credits and
+   * carry the gauge badge; only `ai-inference` is capped by the AI control
+   * plane, so only those nodes drop a dashed edge into the governance band.
+   */
+  metered?: StackMeter
+  /** Set on metered nodes — what specifically gets billed, for the badge tooltip. */
+  meterNote?: string
 }
 
 export type StackStage = {
@@ -97,7 +112,9 @@ const aiStack: StackGraph = {
           icon: Bot,
           kind: 'lesson',
           lessonId: 'agent-runners',
-          metered: true,
+          metered: 'ai-inference',
+          meterNote:
+            'AI inference for the model usage, plus compute for the environment the run works in — and 15 credits if you publish the result as a production deploy',
         },
         {
           id: 'agent-setup',
@@ -159,6 +176,9 @@ const aiStack: StackGraph = {
           icon: PackageCheck,
           kind: 'platform',
           moduleId: 'deploys-previews',
+          metered: 'plan-usage',
+          meterNote:
+            '15 credits per production deploy — Deploy Previews, branch deploys, and failed deploys cost nothing',
         },
       ],
     },
@@ -205,6 +225,9 @@ const aiStack: StackGraph = {
           icon: Zap,
           kind: 'platform',
           moduleId: 'functions-edge',
+          metered: 'plan-usage',
+          meterNote:
+            'Metered compute at the edge, drawn from the same pool of plan credits as the rest of your usage',
         },
         {
           id: 'functions',
@@ -221,6 +244,9 @@ const aiStack: StackGraph = {
           icon: Boxes,
           kind: 'lesson',
           lessonId: 'code-agents',
+          metered: 'plan-usage',
+          meterNote:
+            'The compute your tool runs on, plus the deploys it creates on behalf of its users',
         },
         {
           id: 'forms',
@@ -244,7 +270,9 @@ const aiStack: StackGraph = {
           icon: Sparkles,
           kind: 'lesson',
           lessonId: 'ai-gateway',
-          metered: true,
+          metered: 'ai-inference',
+          meterNote:
+            'AI inference per successful request, converted at 180 credits per $1 USD of provider token usage',
         },
         {
           id: 'database',
@@ -253,6 +281,9 @@ const aiStack: StackGraph = {
           icon: DatabaseZap,
           kind: 'platform',
           moduleId: 'netlify-database',
+          metered: 'plan-usage',
+          meterNote:
+            '10 credits per database compute unit and 20 credits per GB of bandwidth out — compute accrues while the database is awake, including idle time',
         },
         {
           id: 'blobs',
